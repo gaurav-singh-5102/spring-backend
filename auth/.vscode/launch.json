@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-JwtLoginAppApplication<JWTLoginApp>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.nagarro.JwtLoginAppApplication",
+            "projectName": "JWTLoginApp",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
