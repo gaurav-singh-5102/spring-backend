@@ -1,0 +1,27 @@
+{
+  "Test User" : [ {
+    "content" : "Hello",
+    "sender" : "Test User",
+    "receiver" : "Gaurav Singh",
+    "group" : "",
+    "type" : "CHAT",
+    "timestamp" : "2/2/24, 1:11 PM",
+    "groupChat" : false
+  }, {
+    "content" : "Hii",
+    "sender" : "Gaurav Singh",
+    "receiver" : "Test User",
+    "group" : "",
+    "type" : "CHAT",
+    "timestamp" : "2/2/24, 1:11 PM",
+    "groupChat" : false
+  }, {
+    "content" : "hii",
+    "sender" : "Gaurav Singh",
+    "receiver" : "Test User",
+    "group" : "",
+    "type" : "CHAT",
+    "timestamp" : "2/2/24, 5:12 PM",
+    "groupChat" : false
+  } ]
+}
