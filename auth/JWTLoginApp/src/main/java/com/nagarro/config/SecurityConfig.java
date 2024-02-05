@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,19 +28,18 @@ public class SecurityConfig {
 	
 	@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		System.out.println("Filter chain");
-          http
+        return http
                 .cors((cors) -> new CorsConfiguration())
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/user/welcome", "/user/addNewUser", "/user/generateToken", "user/login", "otp/send", "otp/verify", "user/verify-otp", "oauth2/authorization/google", "user/hello").permitAll()
+                        .requestMatchers("/user/welcome", "/user/addNewUser", "/user/generateToken", "user/login",
+                                "otp/send", "otp/verify", "user/verify-otp", "oauth2/authorization/google",
+                                "user/hello", "user/linkedin-auth")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login();
-//                .oauth2ResourceServer();
-        return http.build();
-//                .build();
+                .build();
     }
 	
 	// Password Encoding 

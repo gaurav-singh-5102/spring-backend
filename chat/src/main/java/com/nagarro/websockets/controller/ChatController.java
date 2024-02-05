@@ -17,7 +17,7 @@ import com.nagarro.websockets.service.MessageService;
 
 @Controller
 public class ChatController {
-
+//my comment
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
     @Autowired

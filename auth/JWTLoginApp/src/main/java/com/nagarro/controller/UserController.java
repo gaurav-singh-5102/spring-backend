@@ -1,8 +1,13 @@
 package com.nagarro.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -12,7 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.nagarro.dto.AuthDto;
 import com.nagarro.dto.AuthenticationResponse;
@@ -20,6 +27,7 @@ import com.nagarro.dto.UserDto;
 import com.nagarro.entity.User;
 import com.nagarro.exceptions.OtpException;
 import com.nagarro.exceptions.UserAlreadyExistsException;
+import com.nagarro.service.JWTService;
 import com.nagarro.service.UserService;
 
 import jakarta.validation.Valid;
@@ -32,6 +40,18 @@ public class UserController {
 	
 	@Autowired
     private UserService userService;
+
+    @Autowired
+    private JWTService jwtService;
+
+    @Value("${spring.security.oauth2.client.registration.linkedin.client-id}")
+    private String clientId;
+
+    @Value("${spring.security.oauth2.client.registration.linkedin.client-secret}")
+    private String clientSecret;
+
+    @Value("${spring.security.oauth2.client.registration.linkedin.redirect-uri}")
+    private String redirect;
 
 	@GetMapping("/welcome") 
     public String welcome() { 
@@ -85,5 +105,31 @@ public class UserController {
             return new ResponseEntity<>("Failed to retrieve home page: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
-	
+
+    @GetMapping("/linkedin-auth")
+    public ResponseEntity<?> getLinkedInToken(@RequestParam("code") String code) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Map<String, String>> httpEntity = new HttpEntity<>(headers);
+        String url = "https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code=" + code
+                + "&redirect_uri=" + redirect + "&client_id=" + clientId + "&client_secret=" + clientSecret;
+        try {
+            ResponseEntity<?> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, HashMap.class);
+            HashMap<String, String> responseMap = (HashMap<String, String>) response.getBody();
+            HashMap<?, ?> userDetails = jwtService.decodeJWT(responseMap.get("id_token"));
+            String token = this.jwtService.generateToken((String) userDetails.get("email"));
+            HashMap<String, Object> tokenMap = new HashMap<>();
+            User user = new User();
+            user.setName((String) userDetails.get("name"));
+            user.setEmail((String) userDetails.get("email"));
+            tokenMap.put("token", token);
+            tokenMap.put("user", user);
+            return new ResponseEntity<HashMap<String, Object>>(tokenMap, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Could not get acess token",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
