@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.nagarro.postservice.service.JWTService;
+import com.nagarro.postservice.services.JWTService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,4 +1,4 @@
-package com.nagarro.postservice.service;
+package com.nagarro.postservice.services;
 
 import java.security.Key;
 import java.util.Date;
