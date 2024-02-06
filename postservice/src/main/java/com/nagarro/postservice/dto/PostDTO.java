@@ -5,9 +5,6 @@ import jakarta.validation.constraints.Size;
 
 public class PostDTO {
 
-    @NotBlank(message = "Author cannot be blank.")
-    private String author;
-
     @NotBlank(message = "Heading cannot be blank.")
     @Size(max = 255, message = "Heading cannot exceed more than 255 characters.")
     private String content;
@@ -16,14 +13,6 @@ public class PostDTO {
     private String heading;
 
     public PostDTO() {
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public String getContent() {
