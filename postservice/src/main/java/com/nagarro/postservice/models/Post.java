@@ -25,8 +25,18 @@ public class Post {
     private String content;
 
     private LocalDateTime createdAt;
+    
+    private int likes;
 
-    public Post() {
+    public int getLikes() {
+		return likes;
+	}
+
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+
+	public Post() {
     }
 
     public String getId() {
