@@ -10,8 +10,10 @@ import com.nagarro.postservice.dto.ErrorDTO;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidPostException.class)
-    public ResponseEntity<ErrorDTO> handlePostValidationException(InvalidPostException ex) {
+    @ExceptionHandler({InvalidPostException.class, PostNotFoundException.class})
+    public ResponseEntity<ErrorDTO> handlePostValidationException(Exception ex) {
         return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
+    
+   
 }

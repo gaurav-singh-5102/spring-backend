@@ -14,6 +14,7 @@ import org.springframework.validation.Validator;
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
 import com.nagarro.postservice.exceptions.InvalidPostException;
+import com.nagarro.postservice.exceptions.PostNotFoundException;
 import com.nagarro.postservice.models.Post;
 import com.nagarro.postservice.repository.PostRepository;
 import com.nagarro.postservice.services.PostService;
@@ -38,6 +39,13 @@ public class PostServiceImpl implements PostService {
         post.setHeading(postDTO.getHeading());
         post.setCreatedAt(LocalDateTime.now());
         return postRepository.save(post);
+    }
+    
+    @Override
+    public Post getPostDetails(String postId) throws PostNotFoundException {
+    	
+    	Optional<Post> postOptional = postRepository.findById(postId);
+    	return postOptional.orElseThrow(()-> new PostNotFoundException("Post Not found with id: "+postId));
     }
 
     private void validatePost(PostDTO postDTO) throws InvalidPostException {
