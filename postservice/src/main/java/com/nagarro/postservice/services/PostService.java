@@ -8,7 +8,7 @@ import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.models.Post;
 
 public interface PostService {
-    Post createPost(PostDTO postDTO) throws InvalidPostException;
+    Post createPost(PostDTO postDTO, String string) throws InvalidPostException;
 
     PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size);
 }

@@ -30,10 +30,10 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createPost(PostDTO postDTO) throws InvalidPostException {
+    public Post createPost(PostDTO postDTO, String author) throws InvalidPostException {
         validatePost(postDTO);
         Post post = new Post();
-        post.setAuthor(postDTO.getAuthor());
+        post.setAuthor(author);
         post.setContent(postDTO.getContent());
         post.setHeading(postDTO.getHeading());
         post.setCreatedAt(LocalDateTime.now());
