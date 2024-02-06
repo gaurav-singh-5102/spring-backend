@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -57,11 +58,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size) {
+    public PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size, Optional<String> feedType) {
+
+        Page<Post> postPage;
         int pageInt = page.isPresent() ? page.get() : 1;
         int sizeInt = size.isPresent() ? size.get() : 5;
+        String feed = feedType.isPresent() ? feedType.get() : "all";
+        String author = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Pageable pageable = PageRequest.of(pageInt - 1, sizeInt);
-        Page<Post> postPage = postRepository.findAll(pageable);
+        if (feed.equalsIgnoreCase("all")) {
+            postPage = postRepository.findByAuthorNot(author, pageable);
+        } else {
+            postPage = postRepository.findByAuthor(author, pageable);
+        }
         PostPageDTO postPageDTO = new PostPageDTO();
         postPageDTO.setPosts(postPage.getContent());
         postPageDTO.setPage(pageInt);
