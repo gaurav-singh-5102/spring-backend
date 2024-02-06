@@ -13,5 +13,6 @@ public interface PostService {
 
     PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size);
     Post getPostDetails(String postId) throws PostNotFoundException;
+    void incrementLikes(String postId) throws PostNotFoundException;
     
 }

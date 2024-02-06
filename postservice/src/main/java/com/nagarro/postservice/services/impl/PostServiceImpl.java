@@ -47,6 +47,14 @@ public class PostServiceImpl implements PostService {
     	Optional<Post> postOptional = postRepository.findById(postId);
     	return postOptional.orElseThrow(()-> new PostNotFoundException("Post Not found with id: "+postId));
     }
+    
+    @Override
+    public void incrementLikes(String postId) throws PostNotFoundException {
+    	Optional<Post> postOptional = postRepository.findById(postId);
+    	Post post = postOptional.orElseThrow(()->new PostNotFoundException("Post not found with id: " + postId));
+    	post.setLikes(post.getLikes() + 1);
+    	postRepository.save(post);
+    }
 
     private void validatePost(PostDTO postDTO) throws InvalidPostException {
         Errors errors = new BeanPropertyBindingResult(postDTO, "entity");
