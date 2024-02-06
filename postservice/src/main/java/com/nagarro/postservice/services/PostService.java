@@ -11,7 +11,7 @@ import com.nagarro.postservice.models.Post;
 public interface PostService {
     Post createPost(PostDTO postDTO, String author) throws InvalidPostException;
 
-    PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size);
+    PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size, Optional<String> feed);
     Post getPostDetails(String postId) throws PostNotFoundException;
     void incrementLikes(String postId) throws PostNotFoundException;
     

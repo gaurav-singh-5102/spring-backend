@@ -43,10 +43,10 @@ public class PostController {
                 jwtService.extractUsername(token)), HttpStatus.CREATED);
     }
 
-    @GetMapping("posts")
+    @GetMapping
     public ResponseEntity<?> getPosts(@RequestParam Optional<Integer> page,
-            @RequestParam Optional<Integer> size) {
-        return new ResponseEntity<PostPageDTO>(this.postService.getPosts(page, size), HttpStatus.OK);
+            @RequestParam Optional<Integer> size, @RequestParam Optional<String> feed) {
+        return new ResponseEntity<PostPageDTO>(this.postService.getPosts(page, size, feed), HttpStatus.OK);
     }
 
     @GetMapping("/{postId}")
