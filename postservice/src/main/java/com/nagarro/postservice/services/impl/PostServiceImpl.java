@@ -1,6 +1,7 @@
 package com.nagarro.postservice.services.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
     private Validator validator;
+    
 
     public PostServiceImpl(PostRepository postRepository, Validator validator) {
         this.postRepository = postRepository;
@@ -39,6 +41,7 @@ public class PostServiceImpl implements PostService {
         post.setContent(postDTO.getContent());
         post.setHeading(postDTO.getHeading());
         post.setCreatedAt(LocalDateTime.now());
+        post.setLikes(new ArrayList<String>());
         return postRepository.save(post);
     }
     
@@ -50,10 +53,20 @@ public class PostServiceImpl implements PostService {
     }
     
     @Override
-    public void incrementLikes(String postId) throws PostNotFoundException {
+    public void likePost(String postId) throws PostNotFoundException {
+    	ArrayList<String> likes = new ArrayList<>();
+    	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     	Optional<Post> postOptional = postRepository.findById(postId);
     	Post post = postOptional.orElseThrow(()->new PostNotFoundException("Post not found with id: " + postId));
-    	post.setLikes(post.getLikes() + 1);
+    	likes = post.getLikes();
+    	if(likes.contains(username)) {    		
+    		likes.remove(username);
+    	}
+    	else {
+    		likes.add(username);
+    	}
+    	
+    	post.setLikes(likes);
     	postRepository.save(post);
     }
 

@@ -61,7 +61,7 @@ public class PostController {
     
     @PutMapping("/{postId}/like")
     public ResponseEntity<Map<String, String>> likePost(@PathVariable String postId) throws PostNotFoundException{
-    	postService.incrementLikes(postId);
+    	postService.likePost(postId);
     	Map<String, String> response = new HashMap<>();
     	response.put("message", "Likes incremented for post: " + postId);
     	return ResponseEntity.ok(response);
