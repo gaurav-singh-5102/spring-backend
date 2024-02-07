@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,7 @@ import com.nagarro.postservice.services.JWTService;
 import com.nagarro.postservice.services.PostService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/posts")
 public class PostController {
 
@@ -45,10 +47,10 @@ public class PostController {
                 jwtService.extractUsername(token)), HttpStatus.CREATED);
     }
 
-    @GetMapping("posts")
+    @GetMapping
     public ResponseEntity<?> getPosts(@RequestParam Optional<Integer> page,
-            @RequestParam Optional<Integer> size) {
-        return new ResponseEntity<PostPageDTO>(this.postService.getPosts(page, size), HttpStatus.OK);
+            @RequestParam Optional<Integer> size, @RequestParam Optional<String> feed) {
+        return new ResponseEntity<PostPageDTO>(this.postService.getPosts(page, size, feed), HttpStatus.OK);
     }
 
     @GetMapping("/{postId}")
