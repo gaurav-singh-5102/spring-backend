@@ -1,10 +1,10 @@
 package com.nagarro.postservice.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,13 +26,16 @@ public class Post {
 
     private LocalDateTime createdAt;
     
-    private int likes;
+//    private int likes;
+    
+    private ArrayList<String> likes;
 
-    public int getLikes() {
+
+	public ArrayList<String> getLikes() {
 		return likes;
 	}
 
-	public void setLikes(int likes) {
+	public void setLikes(ArrayList<String> likes) {
 		this.likes = likes;
 	}
 

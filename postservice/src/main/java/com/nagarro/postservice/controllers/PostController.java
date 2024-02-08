@@ -1,5 +1,7 @@
 package com.nagarro.postservice.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -58,9 +60,11 @@ public class PostController {
     }
     
     @PutMapping("/{postId}/like")
-    public ResponseEntity<String> likePost(@PathVariable String postId) throws PostNotFoundException{
-    	postService.incrementLikes(postId);
-    	return ResponseEntity.ok("Likes incremented for post: "+postId);
+    public ResponseEntity<Map<String, String>> likePost(@PathVariable String postId) throws PostNotFoundException{
+    	postService.likePost(postId);
+    	Map<String, String> response = new HashMap<>();
+    	response.put("message", "Likes incremented for post: " + postId);
+    	return ResponseEntity.ok(response);
     }
 
 }
