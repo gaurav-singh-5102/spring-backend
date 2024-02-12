@@ -90,7 +90,7 @@ public class PostServiceImpl implements PostService {
         if (feed.equalsIgnoreCase("all")) {
             postPage = postRepository.findByAuthorNot(author, pageable);
         } else {
-            postPage = postRepository.findByAuthor(author, pageable);
+            postPage = postRepository.findByAuthor(feed, pageable);
         }
         PostPageDTO postPageDTO = new PostPageDTO();
         postPageDTO.setPosts(postPage.getContent());

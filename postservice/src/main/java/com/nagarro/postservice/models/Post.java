@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-@Document(collection = "products")
+@Document(collection = "posts")
 public class Post {
     @Id
     private String id;
