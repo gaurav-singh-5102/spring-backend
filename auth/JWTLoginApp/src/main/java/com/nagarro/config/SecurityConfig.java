@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/user/welcome", "/user/addNewUser", "/user/generateToken", "user/login",
-                                "otp/send", "otp/verify", "user/verify-otp", "oauth2/authorization/google",
+                                "otp/send", "otp/verify", "user/verify-otp", "oauth2/authorization/google","/websocket-server",
                                 "user/hello", "user/linkedin-auth")
                         .permitAll()
                         .anyRequest().authenticated())

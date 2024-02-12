@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
 import com.nagarro.postservice.models.Post;
 import com.nagarro.postservice.repository.PostRepository;
+import com.nagarro.postservice.services.NotificationClient;
 import com.nagarro.postservice.services.PostService;
 
 @Service
@@ -27,7 +29,10 @@ public class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     private Validator validator;
     
+    @Autowired
+    private NotificationClient notificationClient;
 
+    
     public PostServiceImpl(PostRepository postRepository, Validator validator) {
         this.postRepository = postRepository;
         this.validator = validator;
@@ -64,6 +69,7 @@ public class PostServiceImpl implements PostService {
     	}
     	else {
     		likes.add(username);
+//    		notificationClient.sendNotification(post.getAuthor(), username + " liked your post.");
     	}
     	
     	post.setLikes(likes);

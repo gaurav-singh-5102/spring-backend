@@ -49,6 +49,12 @@ public class Notification {
 		this.isGroupNotification = isGroupNotification;
 		this.timestamp = timestamp;
 	}
+	public Notification(String receiver2, String message) {
+		// TODO Auto-generated constructor stub
+		super();
+		this.receiver=receiver2;
+		this.content=message;
+	}
     
     
 }

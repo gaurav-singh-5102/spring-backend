@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
 import com.nagarro.Notificationservice.model.Notification;
@@ -37,6 +38,7 @@ public class NotificationController {
     public void notifyUser(@Payload Notification notification){
         // For one-to-one messages, send to the private queue of the receiving user
 		System.out.println(notification.getReceiver());
+		System.out.println(notification);
         messagingTemplate.convertAndSend(getDestination(notification.getReceiver()), notification);
     }
 	private String getDestination(String user) {
