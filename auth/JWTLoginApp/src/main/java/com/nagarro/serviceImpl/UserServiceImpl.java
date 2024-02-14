@@ -10,10 +10,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.nagarro.dto.AuthDto;
 import com.nagarro.dto.AuthenticationResponse;
 import com.nagarro.dto.ErrorDto;
+import com.nagarro.dto.UserDetails;
 import com.nagarro.dto.UserDto;
 import com.nagarro.entity.User;
 import com.nagarro.exceptions.OtpException;
@@ -45,7 +47,13 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
     private AuthenticationManager authenticationManager;
-	
+
+    private final WebClient webClient;
+
+    public UserServiceImpl(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.build();
+    }
+
 	@Override
     @Transactional
     public ResponseEntity<?> addUser(@Validated UserDto userDTO) throws UserAlreadyExistsException {
@@ -57,15 +65,16 @@ public class UserServiceImpl implements UserService {
 	    	throw new UserAlreadyExistsException();
 	    }
 		
-        User newUser = new User();
-        newUser.setName(userDTO.getName());
-        newUser.setEmail(userDTO.getEmail());
         String encryptedPassword = passwordEncoder.encode(userDTO.getPassword());
+        UserDetails userDetails = this.savetoUserService(userDTO.getEmail(), encryptedPassword);
+        User newUser = new User();
+        newUser.setEmail(userDTO.getEmail());
         newUser.setPassword(encryptedPassword);
+        newUser.setId(userDetails.getId());
 
-        User savedUser = userRepository.save(newUser);
+        userRepository.save(newUser);
 
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        return new ResponseEntity<>(userDetails, HttpStatus.CREATED);
     }
 	
 	@Override
@@ -73,12 +82,13 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> loginUser(AuthDto authDTO) {
         
         User existingUser = userRepository.findByEmail(authDTO.getEmail());
+        UserDetails userDetails = this.fetchFromUserService(existingUser.getId(), authDTO.getEmail());
 
         if (existingUser != null) {
             if (passwordEncoder.matches(authDTO.getPassword(), existingUser.getPassword())) {
                 
                 AuthenticationResponse authenticationResponse = new AuthenticationResponse("Login successful");
-                authenticationResponse.setUser(existingUser);
+                authenticationResponse.setUser(userDetails);
                 return ResponseEntity.ok(authenticationResponse);
             } else {
                 ErrorDto errorDTO = new ErrorDto("Invalid credentials");
@@ -95,13 +105,7 @@ public class UserServiceImpl implements UserService {
 		// Verify OTP
         if (otpService.verifyOtp(email, enteredOtp)) {
             // Authenticate the user using Spring Security's AuthenticationManager
-        	Claims claims = Jwts.claims().setSubject(email);
-            String token = Jwts.builder()
-                    .setClaims(claims)
-                    .signWith(SignatureAlgorithm.HS256, "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437")
-                    .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 24 hours
-                    .compact();
-            System.out.println(token);
+            String token = jwtService.generateToken(email);
             return token;
         } else {
             throw new OtpException();
@@ -123,7 +127,31 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new RuntimeException("Invalid or expired token");
         }
-    
-	}
+    }
+
+    private UserDetails savetoUserService(String email, String password) {
+        UserDetails userDetails = new UserDetails();
+        userDetails.setEmail(email);
+        userDetails.setName(null);
+        System.out.println(password);
+        userDetails.setPassword(password);
+        userDetails.setImage(null);
+        return this.webClient.post()
+                .uri("/profile")
+                .bodyValue(userDetails)
+                .header("Authorization", "Bearer " + jwtService.generateToken(userDetails.getEmail()))
+                .retrieve()
+                .bodyToMono(UserDetails.class)
+                .block();
+    }
+
+    private UserDetails fetchFromUserService(String id, String email) {
+        return this.webClient.get()
+                .uri("/profile/" + id)
+                .header("Authorization", "Bearer " + jwtService.generateToken(email))
+                .retrieve()
+                .bodyToMono(UserDetails.class)
+                .block();
+    }
 	
 }

@@ -12,4 +12,8 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     Page<Post> findByAuthor(String author, Pageable pageable);
 
+    Page<Post> findByAuthorEmailNot(String author, Pageable pageable);
+
+    Page<Post> findByAuthorEmail(String feed, Pageable pageable);
+
 }
