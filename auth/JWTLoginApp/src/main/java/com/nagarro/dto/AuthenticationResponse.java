@@ -5,13 +5,13 @@ import com.nagarro.entity.User;
 public class AuthenticationResponse {
 
 	private String message;
-	private User user;
+	private UserDetails user;
 	
-	public User getUser() {
+	public UserDetails getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserDetails user) {
 		this.user = user;
 	}
 

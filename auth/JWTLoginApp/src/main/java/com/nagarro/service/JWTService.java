@@ -4,12 +4,16 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.nagarro.entity.User;
+import com.nagarro.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,6 +24,9 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JWTService {
 
+    @Autowired
+    private UserRepository userRepository;
+
 public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 	
 	public String generateToken(String username) {
@@ -28,8 +35,11 @@ public static final String SECRET = "5367566B59703373367639792F423F4528482B4D625
 	}
 
 	private String createToken(Map<String, Object> claims, String username) {
-		 return Jwts.builder() 
-	                .setClaims(claims) 
+        User user = userRepository.findByEmail(username);
+        String id = user != null ? user.getId() : "temp";
+        return Jwts.builder()
+                .setClaims(claims)
+                .setId(id)
 	                .setSubject(username) 
 	                .setIssuedAt(new Date(System.currentTimeMillis())) 
 	                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) 

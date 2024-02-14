@@ -9,7 +9,7 @@ import com.nagarro.postservice.exceptions.PostNotFoundException;
 import com.nagarro.postservice.models.Post;
 
 public interface PostService {
-    Post createPost(PostDTO postDTO, String author) throws InvalidPostException;
+    Post createPost(PostDTO postDTO, String token) throws InvalidPostException;
 
     PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size, Optional<String> feed);
     Post getPostDetails(String postId) throws PostNotFoundException;
