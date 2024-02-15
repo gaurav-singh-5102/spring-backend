@@ -22,7 +22,6 @@ import com.nagarro.postservice.dto.PostPageDTO;
 import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
 import com.nagarro.postservice.models.Post;
-import com.nagarro.postservice.services.JWTService;
 import com.nagarro.postservice.services.PostService;
 
 @RestController
@@ -31,20 +30,18 @@ import com.nagarro.postservice.services.PostService;
 public class PostController {
 
     private PostService postService;
-    private JWTService jwtService;
+    // private JWTService jwtService;
 
-    public PostController(PostService postService, JWTService jwtService) {
+    public PostController(PostService postService) {
         this.postService = postService;
-        this.jwtService = jwtService;
+        // this.jwtService = jwtService;
     }
 
     @PostMapping()
     public ResponseEntity<Post> createPost(@RequestBody PostDTO postDTO,
             @RequestHeader("Authorization") String authHeader) throws InvalidPostException {
         String token = authHeader.substring(7);
-        System.out.println(token);
-        return new ResponseEntity<Post>(this.postService.createPost(postDTO,
-                jwtService.extractUsername(token)), HttpStatus.CREATED);
+        return new ResponseEntity<Post>(this.postService.createPost(postDTO, token), HttpStatus.CREATED);
     }
 
     @GetMapping

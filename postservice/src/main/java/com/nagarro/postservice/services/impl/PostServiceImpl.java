@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -16,7 +15,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
@@ -24,7 +22,9 @@ import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
 import com.nagarro.postservice.models.Notification;
 import com.nagarro.postservice.models.Post;
+import com.nagarro.postservice.models.User;
 import com.nagarro.postservice.repository.PostRepository;
+import com.nagarro.postservice.services.JWTService;
 import com.nagarro.postservice.services.PostService;
 
 import reactor.core.publisher.Mono;
@@ -34,23 +34,29 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
     private Validator validator;
-	private final WebClient webClient;
-    private final String notificationServiceBaseUrl;
+    private final WebClient webClient;
+    private final WebClient userWebclient;
+    private JWTService jwtService;
+    @Value("${user.service.base.url}")
+    private String userServiceBaseUrl;
+    @Value("${notification.service.base.url}") 
+    private String notificationServiceBaseUrl;
     
-    public PostServiceImpl(PostRepository postRepository, Validator validator, WebClient.Builder webClientBuilder, @Value("${notification.service.base.url}") String notificationServiceBaseUrl) {
+    public PostServiceImpl(PostRepository postRepository, Validator validator, WebClient.Builder webClientBuilder,
+            JWTService jwtService) {
         this.postRepository = postRepository;
         this.validator = validator;
-        this.webClient = webClientBuilder.baseUrl(notificationServiceBaseUrl).build();
-        this.notificationServiceBaseUrl = notificationServiceBaseUrl;
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8084").build();
+        this.userWebclient = webClientBuilder.baseUrl("http://localhost:8181").build();
+        this.jwtService = jwtService;
     }
 
     @Override
-    public Post createPost(PostDTO postDTO, String author) throws InvalidPostException {
+    public Post createPost(PostDTO postDTO, String token) throws InvalidPostException {
         validatePost(postDTO);
         Post post = new Post();
-        post.setAuthor(author);
+        post.setAuthor(getUser(token));
         post.setContent(postDTO.getContent());
-        post.setHeading(postDTO.getHeading());
         post.setCreatedAt(LocalDateTime.now());
         post.setLikes(new ArrayList<String>());
         return postRepository.save(post);
@@ -88,7 +94,7 @@ public class PostServiceImpl implements PostService {
         Notification notification = new Notification();
         notification.setContent(username+ " liked your post!");
         notification.setSender(username);
-        notification.setReceiver(post.getAuthor());
+        notification.setReceiver(post.getAuthor().getEmail());
         notification.setGroupNotification(false);
         notification.setTimestamp(LocalDateTime.now());
 
@@ -118,9 +124,9 @@ public class PostServiceImpl implements PostService {
         String author = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Pageable pageable = PageRequest.of(pageInt - 1, sizeInt);
         if (feed.equalsIgnoreCase("all")) {
-            postPage = postRepository.findByAuthorNot(author, pageable);
+            postPage = postRepository.findByAuthorEmailNot(author, pageable);
         } else {
-            postPage = postRepository.findByAuthor(author, pageable);
+            postPage = postRepository.findByAuthorEmail(feed, pageable);
         }
         PostPageDTO postPageDTO = new PostPageDTO();
         postPageDTO.setPosts(postPage.getContent());
@@ -132,4 +138,13 @@ public class PostServiceImpl implements PostService {
         return postPageDTO;
     }
 
+    private User getUser(String token) {
+        String id = (String) jwtService.decodeJWT(token).get("jti");
+        return this.userWebclient.get()
+                .uri("/users/profile/" + id)
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .bodyToMono(User.class)
+                .block();
+    }
 }

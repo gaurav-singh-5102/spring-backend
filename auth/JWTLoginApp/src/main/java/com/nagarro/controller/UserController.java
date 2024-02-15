@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.nagarro.dto.AuthDto;
 import com.nagarro.dto.AuthenticationResponse;
+import com.nagarro.dto.UserDetails;
 import com.nagarro.dto.UserDto;
 import com.nagarro.entity.User;
 import com.nagarro.exceptions.OtpException;
@@ -78,7 +79,7 @@ public class UserController {
 		ResponseEntity<?> responseEntity = userService.loginUser(authDTO);
 		if (responseEntity.getStatusCode() == HttpStatus.OK) {
 	        AuthenticationResponse authenticationResponse = (AuthenticationResponse) responseEntity.getBody();
-	        User existingUser = authenticationResponse.getUser();
+            UserDetails existingUser = authenticationResponse.getUser();
 	        
 	    }
         return responseEntity;
@@ -115,12 +116,12 @@ public class UserController {
                 + "&redirect_uri=" + redirect + "&client_id=" + clientId + "&client_secret=" + clientSecret;
         try {
             ResponseEntity<?> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, HashMap.class);
+            @SuppressWarnings("unchecked")
             HashMap<String, String> responseMap = (HashMap<String, String>) response.getBody();
             HashMap<?, ?> userDetails = jwtService.decodeJWT(responseMap.get("id_token"));
             String token = this.jwtService.generateToken((String) userDetails.get("email"));
             HashMap<String, Object> tokenMap = new HashMap<>();
             User user = new User();
-            user.setName((String) userDetails.get("name"));
             user.setEmail((String) userDetails.get("email"));
             tokenMap.put("token", token);
             tokenMap.put("user", user);

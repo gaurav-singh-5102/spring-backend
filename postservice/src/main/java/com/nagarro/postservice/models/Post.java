@@ -7,19 +7,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
-@Document(collection = "products")
+@Document(collection = "posts")
 public class Post {
     @Id
     private String id;
 
     @NotBlank(message = "Author cannot be blank.")
-    private String author;
-
-    @NotBlank(message = "Heading cannot be blank.")
-    @Size(max = 255, message = "Heading cannot exceed more than 255 characters.")
-    private String heading;
+    private User author;
 
     @NotBlank(message = "Content cannot be blank.")
     private String content;
@@ -50,21 +45,6 @@ public class Post {
         this.id = id;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getHeading() {
-        return heading;
-    }
-
-    public void setHeading(String heading) {
-        this.heading = heading;
-    }
 
     public String getContent() {
         return content;
@@ -80,6 +60,14 @@ public class Post {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
 }
