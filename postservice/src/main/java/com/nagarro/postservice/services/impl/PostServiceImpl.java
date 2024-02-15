@@ -4,40 +4,50 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
 import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
+import com.nagarro.postservice.models.Notification;
 import com.nagarro.postservice.models.Post;
 import com.nagarro.postservice.models.User;
 import com.nagarro.postservice.repository.PostRepository;
 import com.nagarro.postservice.services.JWTService;
 import com.nagarro.postservice.services.PostService;
 
+import reactor.core.publisher.Mono;
+
 @Service
 public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
     private Validator validator;
-    private final WebClient webclient;
+	private final WebClient webClient;
+    private final String notificationServiceBaseUrl;
+    private final WebClient userWebclient;
     private JWTService jwtService;
     
-
     public PostServiceImpl(PostRepository postRepository, Validator validator, WebClient.Builder webClientBuilder,
-            JWTService jwtService) {
+            JWTService jwtService, @Value("${notification.service.base.url}") String notificationServiceBaseUrl) {
         this.postRepository = postRepository;
         this.validator = validator;
-        this.webclient = webClientBuilder.build();
+        this.webClient = webClientBuilder.baseUrl(notificationServiceBaseUrl).build();
+        this.notificationServiceBaseUrl = notificationServiceBaseUrl;
+        this.userWebclient = webClientBuilder.baseUrl("http://localhost:8181").build();
         this.jwtService = jwtService;
     }
 
@@ -71,10 +81,29 @@ public class PostServiceImpl implements PostService {
     	}
     	else {
     		likes.add(username);
+    		sendNotification(username, post).subscribe();
     	}
     	
     	post.setLikes(likes);
     	postRepository.save(post);
+    }
+    
+    
+    private Mono<Void> sendNotification(String username, Post post) {
+        // Construct the Notification object
+        Notification notification = new Notification();
+        notification.setContent(username+ " liked your post!");
+        notification.setSender(username);
+        notification.setReceiver(post.getAuthor());
+        notification.setGroupNotification(false);
+        notification.setTimestamp(LocalDateTime.now());
+
+        return webClient.post()
+                .uri("/sendNotification")
+                .body(BodyInserters.fromValue(notification))
+                .retrieve()
+                .toBodilessEntity()
+                .then();
     }
 
     private void validatePost(PostDTO postDTO) throws InvalidPostException {
@@ -111,7 +140,7 @@ public class PostServiceImpl implements PostService {
 
     private User getUser(String token) {
         String id = (String) jwtService.decodeJWT(token).get("jti");
-        return this.webclient.get()
+        return this.userWebclient.get()
                 .uri("/users/profile/" + id)
                 .header("Authorization", "Bearer " + token)
                 .retrieve()
