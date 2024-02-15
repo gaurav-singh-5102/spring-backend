@@ -39,13 +39,15 @@ public class PostServiceImpl implements PostService {
     private JWTService jwtService;
     @Value("${user.service.base.url}")
     private String userServiceBaseUrl;
+    @Value("${notification.service.base.url}") 
+    private String notificationServiceBaseUrl;
     
     public PostServiceImpl(PostRepository postRepository, Validator validator, WebClient.Builder webClientBuilder,
-            JWTService jwtService, @Value("${notification.service.base.url}") String notificationServiceBaseUrl) {
+            JWTService jwtService) {
         this.postRepository = postRepository;
         this.validator = validator;
-        this.webClient = webClientBuilder.baseUrl(notificationServiceBaseUrl).build();
-        this.userWebclient = webClientBuilder.baseUrl(userServiceBaseUrl).build();
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8084").build();
+        this.userWebclient = webClientBuilder.baseUrl("http://localhost:8181").build();
         this.jwtService = jwtService;
     }
 
