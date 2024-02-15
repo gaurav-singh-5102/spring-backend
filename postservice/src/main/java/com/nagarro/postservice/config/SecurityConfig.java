@@ -37,20 +37,6 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-//	@Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .cors().and() // Enable CORS
-//                .csrf().disable() // Disable CSRF protection
-//                .authorizeRequests()
-//                    .requestMatchers("/websocket").permitAll() // Allow WebSocket requests
-//                    .anyRequest().authenticated() // Require authentication for other requests
-//                .and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Set session creation policy
-//                .and()
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
-//                .build();
-//    }
 	
 	@Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception { 
