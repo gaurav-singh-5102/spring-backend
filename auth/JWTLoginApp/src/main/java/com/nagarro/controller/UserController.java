@@ -116,6 +116,7 @@ public class UserController {
                 + "&redirect_uri=" + redirect + "&client_id=" + clientId + "&client_secret=" + clientSecret;
         try {
             ResponseEntity<?> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, HashMap.class);
+            @SuppressWarnings("unchecked")
             HashMap<String, String> responseMap = (HashMap<String, String>) response.getBody();
             HashMap<?, ?> userDetails = jwtService.decodeJWT(responseMap.get("id_token"));
             String token = this.jwtService.generateToken((String) userDetails.get("email"));

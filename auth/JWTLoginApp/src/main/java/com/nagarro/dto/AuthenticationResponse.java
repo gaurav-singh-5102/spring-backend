@@ -1,6 +1,5 @@
 package com.nagarro.dto;
 
-import com.nagarro.entity.User;
 
 public class AuthenticationResponse {
 

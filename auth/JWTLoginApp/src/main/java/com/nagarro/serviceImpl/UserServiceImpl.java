@@ -1,11 +1,10 @@
 package com.nagarro.serviceImpl;
 
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +26,6 @@ import com.nagarro.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.InvalidKeyException;
 
 @Service
@@ -45,9 +43,6 @@ public class UserServiceImpl implements UserService {
 	@Autowired
     private BCryptPasswordEncoder passwordEncoder;
 	
-	@Autowired
-    private AuthenticationManager authenticationManager;
-
     private final WebClient webClient;
 
     public UserServiceImpl(WebClient.Builder webClientBuilder) {
@@ -114,10 +109,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String getHomePage(String token) {
-        Claims claims = validateToken(token);
-        String email = claims.getSubject();
-        String homePageContent = "Welcome, " + email + "! This is your home page content.";
-        return homePageContent;
+            jwtService.validateToken(token);
+            String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String homePageContent = "Welcome, " + email + "! This is your home page content.";
+            return homePageContent;
     }
 
     private Claims validateToken(String token) {

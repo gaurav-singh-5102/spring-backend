@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -16,7 +15,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
@@ -36,18 +34,18 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
     private Validator validator;
-	private final WebClient webClient;
-    private final String notificationServiceBaseUrl;
+    private final WebClient webClient;
     private final WebClient userWebclient;
     private JWTService jwtService;
+    @Value("${user.service.base.url}")
+    private String userServiceBaseUrl;
     
     public PostServiceImpl(PostRepository postRepository, Validator validator, WebClient.Builder webClientBuilder,
             JWTService jwtService, @Value("${notification.service.base.url}") String notificationServiceBaseUrl) {
         this.postRepository = postRepository;
         this.validator = validator;
         this.webClient = webClientBuilder.baseUrl(notificationServiceBaseUrl).build();
-        this.notificationServiceBaseUrl = notificationServiceBaseUrl;
-        this.userWebclient = webClientBuilder.baseUrl("http://localhost:8181").build();
+        this.userWebclient = webClientBuilder.baseUrl(userServiceBaseUrl).build();
         this.jwtService = jwtService;
     }
 
@@ -94,7 +92,7 @@ public class PostServiceImpl implements PostService {
         Notification notification = new Notification();
         notification.setContent(username+ " liked your post!");
         notification.setSender(username);
-        notification.setReceiver(post.getAuthor());
+        notification.setReceiver(post.getAuthor().getEmail());
         notification.setGroupNotification(false);
         notification.setTimestamp(LocalDateTime.now());
 
