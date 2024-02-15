@@ -1,23 +1,13 @@
-package com.nagarro.Notificationservice.model;
+package com.nagarro.postservice.models;
 
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.NotNull;
-
 public class Notification {
 
-	@NotNull(message="Notification message cannot be null")
 	private String content;
-	
-	@NotNull(message="Sender cannot be null")
     private String sender;
-	
-	@NotNull(message="Receiver cannot be null")
     private String receiver;
-	
     private boolean isGroupNotification;
-    
-    @NotNull(message="Timestamp cannot be null")
     private LocalDateTime timestamp;
     
 	public String getContent() {
@@ -25,11 +15,6 @@ public class Notification {
 	}
 	public void setContent(String content) {
 		this.content = content;
-	}
-	@Override
-	public String toString() {
-		return "Notification [content=" + content + ", sender=" + sender + ", receiver=" + receiver
-				+ ", isGroupNotification=" + isGroupNotification + ", timestamp=" + timestamp + "]";
 	}
 	public String getSender() {
 		return sender;
@@ -55,11 +40,8 @@ public class Notification {
 	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
-	public Notification() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public Notification(String content, String sender, String receiver, boolean isGroupNotification, LocalDateTime timestamp) {
+	public Notification(String content, String sender, String receiver, boolean isGroupNotification,
+			LocalDateTime timestamp) {
 		super();
 		this.content = content;
 		this.sender = sender;
@@ -67,12 +49,13 @@ public class Notification {
 		this.isGroupNotification = isGroupNotification;
 		this.timestamp = timestamp;
 	}
-	public Notification(String receiver2, String message) {
-		// TODO Auto-generated constructor stub
-		super();
-		this.receiver=receiver2;
-		this.content=message;
+	public Notification() {
+		
 	}
-    
-    
+	@Override
+	public String toString() {
+		return "Notification [content=" + content + ", sender=" + sender + ", receiver=" + receiver
+				+ ", isGroupNotification=" + isGroupNotification + ", timestamp=" + timestamp + "]";
+	}
+	
 }
