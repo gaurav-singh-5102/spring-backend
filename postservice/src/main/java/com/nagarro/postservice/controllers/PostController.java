@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -57,8 +58,9 @@ public class PostController {
     }
     
     @PutMapping("/{postId}/like")
-    public ResponseEntity<Map<String, String>> likePost(@PathVariable String postId) throws PostNotFoundException{
-    	postService.likePost(postId);
+    public ResponseEntity<Map<String, String>> likePost(@PathVariable String postId, @RequestHeader("Authorization") String authHeader) throws PostNotFoundException{
+    	String token = authHeader.substring(7);
+    	postService.likePost(postId, token);
     	Map<String, String> response = new HashMap<>();
     	response.put("message", "Likes incremented for post: " + postId);
     	return ResponseEntity.ok(response);

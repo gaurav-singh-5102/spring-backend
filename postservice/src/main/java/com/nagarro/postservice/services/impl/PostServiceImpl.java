@@ -37,9 +37,9 @@ public class PostServiceImpl implements PostService {
     private final WebClient webClient;
     private final WebClient userWebclient;
     private JWTService jwtService;
-    @Value("${user.service.base.url}")
+    
     private String userServiceBaseUrl;
-    @Value("${notification.service.base.url}") 
+    
     private String notificationServiceBaseUrl;
     
     public PostServiceImpl(PostRepository postRepository, Validator validator, WebClient.Builder webClientBuilder,
@@ -70,18 +70,19 @@ public class PostServiceImpl implements PostService {
     }
     
     @Override
-    public void likePost(String postId) throws PostNotFoundException {
+    public void likePost(String postId, String token) throws PostNotFoundException {
     	ArrayList<String> likes = new ArrayList<>();
+    	String userId=(String) jwtService.decodeJWT(token).get("jti");
     	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     	Optional<Post> postOptional = postRepository.findById(postId);
     	Post post = postOptional.orElseThrow(()->new PostNotFoundException("Post not found with id: " + postId));
     	likes = post.getLikes();
-    	if(likes.contains(username)) {    		
-    		likes.remove(username);
+    	if(likes.contains(userId)) {    		
+    		likes.remove(userId);
     	}
     	else {
-    		likes.add(username);
-    		sendNotification(username, post).subscribe();
+    		likes.add(userId);
+    		sendNotification(userId, username, post).subscribe();
     	}
     	
     	post.setLikes(likes);
@@ -89,12 +90,12 @@ public class PostServiceImpl implements PostService {
     }
     
     
-    private Mono<Void> sendNotification(String username, Post post) {
+    private Mono<Void> sendNotification(String userId, String username, Post post) {
         // Construct the Notification object
         Notification notification = new Notification();
         notification.setContent(username+ " liked your post!");
         notification.setSender(username);
-        notification.setReceiver(post.getAuthor().getEmail());
+        notification.setReceiver(post.getAuthor().getId());
         notification.setGroupNotification(false);
         notification.setTimestamp(LocalDateTime.now());
 

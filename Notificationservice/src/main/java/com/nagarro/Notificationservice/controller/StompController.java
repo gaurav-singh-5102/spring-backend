@@ -1,21 +1,17 @@
 package com.nagarro.Notificationservice.controller;
 
-import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
 import com.nagarro.Notificationservice.model.Notification;
 
 @Controller
 public class StompController {
-	
+
 	@Autowired
     private SimpMessageSendingOperations messagingTemplate;
 	
