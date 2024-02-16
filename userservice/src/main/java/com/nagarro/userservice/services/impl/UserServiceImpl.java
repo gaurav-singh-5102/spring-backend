@@ -53,6 +53,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    private void validateProfile(ProfileUpdateDTO profileUpdateDTO) throws InvalidUserDetails {
+        Errors errors = new BeanPropertyBindingResult(profileUpdateDTO, "entity");
+        validator.validate(profileUpdateDTO, errors);
+        if (errors.hasErrors()) {
+            throw new InvalidUserDetails();
+        }
+    }
+
     public User findUser(String id) throws UserNotFoundException {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
@@ -62,7 +70,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(String id, ProfileUpdateDTO profileUpdateDTO) throws UserNotFoundException {
+    public User updateUser(String id, ProfileUpdateDTO profileUpdateDTO) throws UserNotFoundException, InvalidUserDetails {
+        validateProfile(profileUpdateDTO);
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
             throw new UserNotFoundException();

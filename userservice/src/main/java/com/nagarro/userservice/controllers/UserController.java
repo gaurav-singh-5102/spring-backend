@@ -46,7 +46,7 @@ public class UserController {
     @PutMapping("profile/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") String id,
             @RequestBody ProfileUpdateDTO profileUpdateDTO)
-            throws UserNotFoundException {
+            throws UserNotFoundException, InvalidUserDetails {
         return new ResponseEntity<User>(userService.updateUser(id, profileUpdateDTO), HttpStatus.OK);
     }
 
