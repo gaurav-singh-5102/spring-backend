@@ -115,15 +115,6 @@ public class UserServiceImpl implements UserService {
             return homePageContent;
     }
 
-    private Claims validateToken(String token) {
-        // Validate the token and extract claims
-        try {
-            return Jwts.parser().setSigningKey("5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437").parseClaimsJws(token).getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid or expired token");
-        }
-    }
-
     private UserDetails savetoUserService(String email, String password) {
         UserDetails userDetails = new UserDetails();
         userDetails.setEmail(email);

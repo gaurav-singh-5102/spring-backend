@@ -16,11 +16,12 @@ import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.nagarro.postservice.dto.NotificationRequestDto;
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
+import com.nagarro.postservice.exceptions.InvalidNotificationRequestException;
 import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
-import com.nagarro.postservice.models.Notification;
 import com.nagarro.postservice.models.Post;
 import com.nagarro.postservice.models.User;
 import com.nagarro.postservice.repository.PostRepository;
@@ -89,21 +90,31 @@ public class PostServiceImpl implements PostService {
     }
     
     
-    private Mono<Void> sendNotification(String username, Post post) {
+    private Mono<Void> sendNotification(String username, Post post) throws InvalidNotificationRequestException {
         // Construct the Notification object
-        Notification notification = new Notification();
+        NotificationRequestDto notification = new NotificationRequestDto();
         notification.setContent(username+ " liked your post!");
         notification.setSender(username);
         notification.setReceiver(post.getAuthor().getEmail());
         notification.setGroupNotification(false);
         notification.setTimestamp(LocalDateTime.now());
 
+        validateNotification(notification);
+        
         return webClient.post()
                 .uri("/sendNotification")
                 .body(BodyInserters.fromValue(notification))
                 .retrieve()
                 .toBodilessEntity()
                 .then();
+    }
+    
+    private void validateNotification(NotificationRequestDto notification) {
+        Errors errors = new BeanPropertyBindingResult(notification, "entity");
+        validator.validate(notification, errors);
+        if(errors.hasErrors()) {
+        	throw new InvalidNotificationRequestException(errors.getAllErrors());
+        }
     }
 
     private void validatePost(PostDTO postDTO) throws InvalidPostException {

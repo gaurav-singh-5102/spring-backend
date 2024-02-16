@@ -15,5 +15,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
     
+    @ExceptionHandler(InvalidNotificationRequestException.class)
+    public ResponseEntity<ErrorDTO> handleInvalidNotificationRequestException(InvalidNotificationRequestException ex) {
+        return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+    
    
 }
