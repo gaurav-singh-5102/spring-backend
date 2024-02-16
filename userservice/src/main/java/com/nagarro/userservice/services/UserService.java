@@ -12,5 +12,5 @@ public interface UserService {
 
     User findUser(String id) throws UserNotFoundException;
 
-    User updateUser(String id, ProfileUpdateDTO profileUpdateDTO) throws UserNotFoundException;
+    User updateUser(String id, ProfileUpdateDTO profileUpdateDTO) throws UserNotFoundException, InvalidUserDetails;
 }
