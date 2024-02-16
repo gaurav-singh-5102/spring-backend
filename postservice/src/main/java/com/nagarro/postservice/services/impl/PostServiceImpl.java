@@ -71,7 +71,7 @@ public class PostServiceImpl implements PostService {
     }
     
     @Override
-    public void likePost(String postId) throws PostNotFoundException {
+    public void likePost(String postId, String token) throws PostNotFoundException {
     	ArrayList<String> likes = new ArrayList<>();
     	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     	Optional<Post> postOptional = postRepository.findById(postId);

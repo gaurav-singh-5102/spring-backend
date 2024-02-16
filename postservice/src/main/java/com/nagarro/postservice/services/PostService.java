@@ -13,6 +13,6 @@ public interface PostService {
 
     PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size, Optional<String> feed);
     Post getPostDetails(String postId) throws PostNotFoundException;
-    void likePost(String postId) throws PostNotFoundException;
+    void likePost(String postId, String token) throws PostNotFoundException;
     
 }
