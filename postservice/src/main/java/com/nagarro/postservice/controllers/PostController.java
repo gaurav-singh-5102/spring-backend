@@ -47,8 +47,10 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<?> getPosts(@RequestParam Optional<Integer> page,
-            @RequestParam Optional<Integer> size, @RequestParam Optional<String> feed) {
-        return new ResponseEntity<PostPageDTO>(this.postService.getPosts(page, size, feed), HttpStatus.OK);
+            @RequestParam Optional<Integer> size, @RequestParam Optional<String> feed,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        return new ResponseEntity<PostPageDTO>(this.postService.getPosts(page, size, feed, token), HttpStatus.OK);
     }
 
     @GetMapping("/{postId}")
