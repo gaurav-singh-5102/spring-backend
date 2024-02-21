@@ -138,15 +138,22 @@ public class PostServiceImpl implements PostService {
         String author = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Pageable pageable = PageRequest.of(pageInt - 1, sizeInt);
         if (feed.equalsIgnoreCase("all")) {
+            List<User> users = new ArrayList<User>();
             postPage = postRepository.findByAuthorEmailNot(author, pageable);
-            postPage.getContent().forEach(post -> {
-                User postAuthor = getUser(token, post.getAuthor().getId());
-                post.setAuthor(postAuthor);
+            postPage.getContent().stream().forEach(post -> {
+                if (!users.contains(post.getAuthor())) {
+                    User postAuthor = getUser(token, post.getAuthor().getId());
+                    post.setAuthor(postAuthor);
+                    users.add(postAuthor);
+                }
             });
         } else {
             postPage = postRepository.findByAuthorEmail(feed, pageable);
-            User postAuthor = getUser(token, postPage.getContent().get(0).getAuthor().getId());
-            postPage.getContent().forEach(post -> post.setAuthor(postAuthor));
+            String authorId = postPage.getContent().get(0).getAuthor().getId();
+            User postAuthor = getUser(token, authorId);
+            postPage.getContent().forEach(post -> {
+                post.setAuthor(postAuthor);
+            });
         }
         PostPageDTO postPageDTO = new PostPageDTO();
         postPageDTO.setPosts(postPage.getContent());
