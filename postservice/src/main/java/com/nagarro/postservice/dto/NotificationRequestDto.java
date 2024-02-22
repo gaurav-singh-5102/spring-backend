@@ -11,8 +11,7 @@ public class NotificationRequestDto {
     private String sender;
 	@NotBlank(message="Receiver content cannot be null")
     private String receiver;
-    private boolean isGroupNotification;
-    @NotBlank(message="Timestamp content cannot be null")
+	private boolean isGroupNotification;
     private LocalDateTime timestamp;
     
 	public String getContent() {

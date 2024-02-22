@@ -2,6 +2,7 @@ package com.nagarro.postservice.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -55,8 +56,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post createPost(PostDTO postDTO, String token) throws InvalidPostException {
         validatePost(postDTO);
+        String id = (String) jwtService.decodeJWT(token).get("jti");
         Post post = new Post();
-        post.setAuthor(getUser(token));
+        post.setAuthor(getUser(token, id));
         post.setContent(postDTO.getContent());
         post.setCreatedAt(LocalDateTime.now());
         post.setLikes(new ArrayList<String>());
@@ -126,7 +128,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size, Optional<String> feedType) {
+    public PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size, Optional<String> feedType,
+            String token) {
 
         Page<Post> postPage;
         int pageInt = page.isPresent() ? page.get() : 1;
@@ -135,9 +138,22 @@ public class PostServiceImpl implements PostService {
         String author = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Pageable pageable = PageRequest.of(pageInt - 1, sizeInt);
         if (feed.equalsIgnoreCase("all")) {
+            List<User> users = new ArrayList<User>();
             postPage = postRepository.findByAuthorEmailNot(author, pageable);
+            postPage.getContent().stream().forEach(post -> {
+                if (!users.contains(post.getAuthor())) {
+                    User postAuthor = getUser(token, post.getAuthor().getId());
+                    post.setAuthor(postAuthor);
+                    users.add(postAuthor);
+                }
+            });
         } else {
             postPage = postRepository.findByAuthorEmail(feed, pageable);
+            String authorId = postPage.getContent().get(0).getAuthor().getId();
+            User postAuthor = getUser(token, authorId);
+            postPage.getContent().forEach(post -> {
+                post.setAuthor(postAuthor);
+            });
         }
         PostPageDTO postPageDTO = new PostPageDTO();
         postPageDTO.setPosts(postPage.getContent());
@@ -149,13 +165,21 @@ public class PostServiceImpl implements PostService {
         return postPageDTO;
     }
 
-    private User getUser(String token) {
-        String id = (String) jwtService.decodeJWT(token).get("jti");
-        return this.userWebclient.get()
-                .uri("/users/profile/" + id)
-                .header("Authorization", "Bearer " + token)
-                .retrieve()
-                .bodyToMono(User.class)
-                .block();
+    private User getUser(String token, String id) {
+        try {
+            return this.userWebclient.get()
+                    .uri("/users/profile/" + id)
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve()
+                    .bodyToMono(User.class)
+                    .block();
+        } catch (Exception e) {
+            User user = new User();
+            user.setEmail(null);
+            user.setId(id);
+            user.setName("Deleted User");
+            user.setImage(null);
+            return user;
+        }
     }
 }
