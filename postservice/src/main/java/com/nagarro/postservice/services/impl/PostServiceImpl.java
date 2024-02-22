@@ -60,6 +60,7 @@ public class PostServiceImpl implements PostService {
         post.setContent(postDTO.getContent());
         post.setCreatedAt(LocalDateTime.now());
         post.setLikes(new ArrayList<String>());
+        System.out.println(post);
         return postRepository.save(post);
     }
     

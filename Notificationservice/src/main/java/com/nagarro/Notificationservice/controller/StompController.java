@@ -17,6 +17,7 @@ public class StompController {
 	
 	@MessageMapping("/notification.send")
     public void notifyUser(@Payload Notification notification){
+		System.out.println(notification);
         messagingTemplate.convertAndSend(getDestination(notification.getReceiver()), notification);
     }
 	

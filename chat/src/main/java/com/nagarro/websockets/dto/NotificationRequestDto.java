@@ -1,11 +1,11 @@
-package com.nagarro.postservice.dto;
+package com.nagarro.websockets.dto;
 
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class NotificationRequestDto {
+
 	@NotBlank(message="Notification content cannot be null")
 	private String content;
 	@NotBlank(message="Sender content cannot be null")
@@ -13,7 +13,6 @@ public class NotificationRequestDto {
 	@NotBlank(message="Receiver content cannot be null")
     private String receiver;
     private boolean isGroupNotification;
-    @NotNull(message="Timestamp content cannot be null")
     private LocalDateTime timestamp;
     
 	public String getContent() {
