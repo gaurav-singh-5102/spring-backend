@@ -40,11 +40,11 @@ public class MessageService {
 
     public void saveMessage(ChatMessage chatMessage) throws ChatMessageValidationException, InvalidNotificationRequestException {
         validateChatMessage(chatMessage);
-        messages.computeIfAbsent(chatMessage.getSenderName(), k -> new HashMap<>())
-                .computeIfAbsent(chatMessage.getReceiverName(), k -> new ArrayList<>())
+        messages.computeIfAbsent(chatMessage.getSenderId(), k -> new HashMap<>())
+                .computeIfAbsent(chatMessage.getReceiverId(), k -> new ArrayList<>())
                 .add(chatMessage);
-        messages.computeIfAbsent(chatMessage.getReceiverName(), k -> new HashMap<>())
-                .computeIfAbsent(chatMessage.getSenderName(), k -> new ArrayList<>())
+        messages.computeIfAbsent(chatMessage.getReceiverId(), k -> new HashMap<>())
+                .computeIfAbsent(chatMessage.getSenderId(), k -> new ArrayList<>())
                 .add(chatMessage);
         System.out.println(chatMessage);
         sendNotification(chatMessage);
@@ -59,11 +59,11 @@ public class MessageService {
 
     }
 
-    public HashMap<String, List<ChatMessage>> getMessages(String username) {
-        if (!messages.containsKey(username)) {
-            loadMessagesFromFile(username);
+    public HashMap<String, List<ChatMessage>> getMessages(String userid) {
+        if (!messages.containsKey(userid)) {
+            loadMessagesFromFile(userid);
         }
-        return messages.getOrDefault(username, new HashMap<>());
+        return messages.getOrDefault(userid, new HashMap<>());
     }
 
     // Save messages to a JSON file for a specific user
