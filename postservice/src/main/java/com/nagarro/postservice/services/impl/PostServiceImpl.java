@@ -96,7 +96,7 @@ public class PostServiceImpl implements PostService {
         NotificationRequestDto notification = new NotificationRequestDto();
         notification.setContent(username+ " liked your post!");
         notification.setSender(username);
-        notification.setReceiver(post.getAuthor().getEmail());
+        notification.setReceiver(post.getAuthor().getId());
         notification.setGroupNotification(false);
         notification.setTimestamp(LocalDateTime.now());
 

@@ -26,19 +26,12 @@ public class ChatController {
     private SimpMessageSendingOperations messagingTemplate;
     @Autowired
     private MessageService messageService;
-
     private List<User> users = new ArrayList<>();
-
     
     @MessageMapping("/chat.join")
     @SendTo("/topic/join")
-    public ConnectMessage join(@Payload ConnectMessage connectMessage, SimpMessageHeaderAccessor headerAccessor) {
-        
-        System.out.println("Users: "+users);
-        //Create a list to hold sender name and status
-        
-        User userInfo = new User();
-        
+    public ConnectMessage join(@Payload ConnectMessage connectMessage, SimpMessageHeaderAccessor headerAccessor) {        
+    	User userInfo = new User(); 
         userInfo.setId(connectMessage.getSenderId());
         userInfo.setName(connectMessage.getSenderName());
         userInfo.setStatus("Active");
@@ -56,9 +49,7 @@ public class ChatController {
     	try {
     		
     		headerAccessor.getSessionAttributes().put("username", chatMessage.getSenderName());
-    		headerAccessor.getSessionAttributes().put("userid", chatMessage.getSenderId());
-    		// Send the registration message to the private queue of the receiving user
-    		
+    		headerAccessor.getSessionAttributes().put("userid", chatMessage.getSenderId());		
     		messagingTemplate.convertAndSend(getDestination(chatMessage.getReceiverId()), chatMessage);
     	}
     	catch(Exception ex) {
@@ -78,7 +69,7 @@ public class ChatController {
     	catch(Exception ex) {
             ex.printStackTrace();
     	}
-        // For one-to-one messages, send to the private queue of the receiving user
+        
     }
 
     @MessageMapping("/chat.unregister")
@@ -90,8 +81,7 @@ public class ChatController {
         userInfo.setId(connectMessage.getSenderId());
         userInfo.setName(connectMessage.getSenderName());
         userInfo.setStatus("Inactive");
-       
-//        users.put(connectMessage.getSenderId(), "Inactive");
+
         connectMessage.setUsers(users);
         return connectMessage;
     }

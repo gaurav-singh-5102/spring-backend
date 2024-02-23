@@ -110,7 +110,7 @@ public class MessageService {
         // Construct the Notification object
         NotificationRequestDto notification = new NotificationRequestDto();
         notification.setContent(chatMessage.getContent());
-        notification.setSender(chatMessage.getSenderId());
+        notification.setSender(chatMessage.getSenderName());
         notification.setReceiver(chatMessage.getReceiverId());
         notification.setGroupNotification(false);
         notification.setTimestamp(LocalDateTime.now());
