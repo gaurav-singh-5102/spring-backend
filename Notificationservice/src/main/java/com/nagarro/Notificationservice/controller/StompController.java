@@ -22,7 +22,6 @@ public class StompController {
 	
 
 	private String getDestination(String user) {
-		System.out.println(user);
         return String.format("/user/%s/private", user);
     }
 	

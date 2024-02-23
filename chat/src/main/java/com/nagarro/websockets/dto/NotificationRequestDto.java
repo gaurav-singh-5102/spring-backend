@@ -1,23 +1,18 @@
-package com.nagarro.Notificationservice.model;
+package com.nagarro.websockets.dto;
 
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
-public class Notification {
+public class NotificationRequestDto {
 
-	@NotNull(message="Notification message cannot be null")
+	@NotBlank(message="Notification content cannot be null")
 	private String content;
-	
-	@NotNull(message="Sender cannot be null")
+	@NotBlank(message="Sender content cannot be null")
     private String sender;
-	
-	@NotNull(message="Receiver cannot be null")
+	@NotBlank(message="Receiver content cannot be null")
     private String receiver;
-	
     private boolean isGroupNotification;
-    
-    @NotNull(message="Timestamp cannot be null")
     private LocalDateTime timestamp;
     
 	public String getContent() {
@@ -25,11 +20,6 @@ public class Notification {
 	}
 	public void setContent(String content) {
 		this.content = content;
-	}
-	@Override
-	public String toString() {
-		return "Notification [content=" + content + ", sender=" + sender + ", receiver=" + receiver
-				+ ", isGroupNotification=" + isGroupNotification + ", timestamp=" + timestamp + "]";
 	}
 	public String getSender() {
 		return sender;
@@ -55,10 +45,8 @@ public class Notification {
 	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
-	public Notification() {
-		super();
-	}
-	public Notification(String content, String sender, String receiver, boolean isGroupNotification, LocalDateTime timestamp) {
+	public NotificationRequestDto(String content, String sender, String receiver, boolean isGroupNotification,
+			LocalDateTime timestamp) {
 		super();
 		this.content = content;
 		this.sender = sender;
@@ -66,11 +54,13 @@ public class Notification {
 		this.isGroupNotification = isGroupNotification;
 		this.timestamp = timestamp;
 	}
-	public Notification(String receiver2, String message) {
-		super();
-		this.receiver=receiver2;
-		this.content=message;
+	public NotificationRequestDto() {
+		
 	}
-    
-    
+	@Override
+	public String toString() {
+		return "Notification [content=" + content + ", sender=" + sender + ", receiver=" + receiver
+				+ ", isGroupNotification=" + isGroupNotification + ", timestamp=" + timestamp + "]";
+	}
+	
 }

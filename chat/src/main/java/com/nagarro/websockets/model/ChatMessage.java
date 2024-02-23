@@ -2,8 +2,10 @@ package com.nagarro.websockets.model;
 
 public class ChatMessage {
     private String content;
-    private String sender;
-    private String receiver;
+    private String senderId;
+    private String senderName;
+    private String receiverId;
+    private String receiverName;
     private String group;
     private boolean isGroupChat;
     private MessageType type;
@@ -21,14 +23,6 @@ public class ChatMessage {
         this.content = content;
     }
 
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
     public MessageType getType() {
         return type;
     }
@@ -37,15 +31,39 @@ public class ChatMessage {
         this.type = type;
     }
 
-    public String getReceiver() {
-        return receiver;
-    }
+    public String getSenderId() {
+		return senderId;
+	}
 
-    public void setReceiver(String receiver) {
-        this.receiver = receiver;
-    }
+	public void setSenderId(String senderId) {
+		this.senderId = senderId;
+	}
 
-    public String getGroup() {
+	public String getSenderName() {
+		return senderName;
+	}
+
+	public void setSenderName(String senderName) {
+		this.senderName = senderName;
+	}
+
+	public String getReceiverId() {
+		return receiverId;
+	}
+
+	public void setReceiverId(String receiverId) {
+		this.receiverId = receiverId;
+	}
+
+	public String getReceiverName() {
+		return receiverName;
+	}
+
+	public void setReceiverName(String receiverName) {
+		this.receiverName = receiverName;
+	}
+
+	public String getGroup() {
         return group;
     }
 
@@ -68,5 +86,14 @@ public class ChatMessage {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+
+	@Override
+	public String toString() {
+		return "ChatMessage [content=" + content + ", senderId=" + senderId + ", senderName=" + senderName
+				+ ", receiverId=" + receiverId + ", receiverName=" + receiverName + ", group=" + group
+				+ ", isGroupChat=" + isGroupChat + ", type=" + type + ", timestamp=" + timestamp + "]";
+	}
+
+	
 
 }

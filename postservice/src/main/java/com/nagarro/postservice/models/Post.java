@@ -70,4 +70,10 @@ public class Post {
         this.author = author;
     }
 
+	@Override
+	public String toString() {
+		return "Post [id=" + id + ", author=" + author + ", content=" + content + ", createdAt=" + createdAt
+				+ ", likes=" + likes + "]";
+	}
+
 }

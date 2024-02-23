@@ -19,7 +19,6 @@ public class NotificationController {
 
     @PostMapping("/sendNotification")
     public ResponseEntity<String> sendNotification(@RequestBody @Validated Notification notification) throws UserNotFoundException{
-//    	String token = authHeader.substring(7);
     	stompController.notifyUser(notification);
         return ResponseEntity.ok("Notification sent successfully");
     }
