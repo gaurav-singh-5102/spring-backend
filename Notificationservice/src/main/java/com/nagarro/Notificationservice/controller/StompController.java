@@ -17,13 +17,11 @@ public class StompController {
 	
 	@MessageMapping("/notification.send")
     public void notifyUser(@Payload Notification notification){
-		System.out.println(notification);
         messagingTemplate.convertAndSend(getDestination(notification.getReceiver()), notification);
     }
 	
 
 	private String getDestination(String user) {
-		System.out.println(user);
         return String.format("/user/%s/private", user);
     }
 	
