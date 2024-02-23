@@ -14,5 +14,7 @@ public interface PostService {
     PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size, Optional<String> feed, String token);
     Post getPostDetails(String postId) throws PostNotFoundException;
     void likePost(String postId, String token) throws PostNotFoundException;
+
+    void deletePost(String postId) throws PostNotFoundException;
     
 }

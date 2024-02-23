@@ -182,4 +182,13 @@ public class PostServiceImpl implements PostService {
             return user;
         }
     }
+
+    @Override
+    public void deletePost(String postId) throws PostNotFoundException {
+        Optional<Post> postToBeDeleted = postRepository.findById(postId);
+        if (postToBeDeleted.isEmpty()) {
+            throw new PostNotFoundException(postId);
+        }
+        postRepository.delete(postToBeDeleted.get());
+    }
 }
