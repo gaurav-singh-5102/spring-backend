@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
+import com.nagarro.postservice.exceptions.InvalidAuthorException;
 import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
 import com.nagarro.postservice.models.Post;
@@ -66,6 +68,13 @@ public class PostController {
     	Map<String, String> response = new HashMap<>();
     	response.put("message", "Likes incremented for post: " + postId);
     	return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable String postId)
+            throws PostNotFoundException, InvalidAuthorException {
+        postService.deletePost(postId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

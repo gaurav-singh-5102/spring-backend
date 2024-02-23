@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
+import com.nagarro.postservice.exceptions.InvalidAuthorException;
 import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
 import com.nagarro.postservice.models.Post;
@@ -14,5 +15,7 @@ public interface PostService {
     PostPageDTO getPosts(Optional<Integer> page, Optional<Integer> size, Optional<String> feed, String token);
     Post getPostDetails(String postId) throws PostNotFoundException;
     void likePost(String postId, String token) throws PostNotFoundException;
+
+    void deletePost(String postId) throws PostNotFoundException, InvalidAuthorException;
     
 }
