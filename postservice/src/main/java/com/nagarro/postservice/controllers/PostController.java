@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
+import com.nagarro.postservice.exceptions.InvalidAuthorException;
 import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
 import com.nagarro.postservice.models.Post;
@@ -70,7 +71,8 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<?> deletePost(@PathVariable String postId) throws PostNotFoundException {
+    public ResponseEntity<?> deletePost(@PathVariable String postId)
+            throws PostNotFoundException, InvalidAuthorException {
         postService.deletePost(postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

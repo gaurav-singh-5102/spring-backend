@@ -19,6 +19,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDTO> handleInvalidNotificationRequestException(InvalidNotificationRequestException ex) {
         return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
-    
+
+    @ExceptionHandler(InvalidAuthorException.class)
+    public ResponseEntity<ErrorDTO> handleInvalidAuthorException(InvalidAuthorException ex) {
+        return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
    
 }

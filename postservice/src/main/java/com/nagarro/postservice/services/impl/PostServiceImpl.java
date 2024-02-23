@@ -20,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.nagarro.postservice.dto.NotificationRequestDto;
 import com.nagarro.postservice.dto.PostDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
+import com.nagarro.postservice.exceptions.InvalidAuthorException;
 import com.nagarro.postservice.exceptions.InvalidNotificationRequestException;
 import com.nagarro.postservice.exceptions.InvalidPostException;
 import com.nagarro.postservice.exceptions.PostNotFoundException;
@@ -184,11 +185,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(String postId) throws PostNotFoundException {
+    public void deletePost(String postId) throws PostNotFoundException, InvalidAuthorException {
         Optional<Post> postToBeDeleted = postRepository.findById(postId);
         if (postToBeDeleted.isEmpty()) {
             throw new PostNotFoundException(postId);
         }
-        postRepository.delete(postToBeDeleted.get());
+        Post post =  postToBeDeleted.get();
+        if(post.getAuthor().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString())){
+            postRepository.delete(postToBeDeleted.get());
+        }else{
+            throw new InvalidAuthorException();
+        }
     }
 }
