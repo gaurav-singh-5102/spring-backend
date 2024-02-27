@@ -12,6 +12,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import com.nagarro.Commentservice.DTO.CommentDTO;
+import com.nagarro.Commentservice.DTO.CommentsPageDTO;
 import com.nagarro.Commentservice.Exceptions.InvalidCommentException;
 import com.nagarro.Commentservice.models.Comment;
 import com.nagarro.Commentservice.repository.CommentRepository;
@@ -50,12 +51,22 @@ public class CommentServiceImpl implements CommentService {
     }
 	
 	@Override
-	public Page<Comment> getCommentsByPostId(String postId, Optional<Integer> page, Optional<Integer> size) {
+	public CommentsPageDTO getCommentsByPostId(String postId, Optional<Integer> page, Optional<Integer> size) {
 	    int pageInt = page.orElse(1); 
 	    int sizeInt = size.orElse(5); 
 	    Pageable pageable = PageRequest.of(pageInt - 1, sizeInt); 
 
-	    return commentRepository.findByPostId(postId, pageable);
+	    Page<Comment> commentPage;
+	    commentPage = commentRepository.findByPostId(postId, pageable);
+	    
+	    CommentsPageDTO commentsPageDTO = new CommentsPageDTO();
+	    commentsPageDTO.setComments(commentPage.getContent());
+	    commentsPageDTO.setPage(pageInt);
+	    commentsPageDTO.setTotal(commentPage.getTotalElements());
+	    commentsPageDTO.setFirst(commentPage.isFirst());
+	    commentsPageDTO.setLast(commentPage.isLast());
+	    
+	    return commentsPageDTO;
 	}
 	
 	private void validateComment(CommentDTO commentDTO) throws InvalidCommentException {

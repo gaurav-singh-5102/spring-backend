@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nagarro.Commentservice.DTO.CommentDTO;
+import com.nagarro.Commentservice.DTO.CommentsPageDTO;
 import com.nagarro.Commentservice.Exceptions.InvalidCommentException;
 import com.nagarro.Commentservice.models.Comment;
 import com.nagarro.Commentservice.services.CommentService;
@@ -43,11 +44,10 @@ public class CommentController {
         return ResponseEntity.ok(commentCount);
     }
 	@GetMapping("/post/{postId}")
-    public ResponseEntity<Page<Comment>> getCommentsByPostId(@PathVariable String postId,
+    public ResponseEntity<?> getCommentsByPostId(@PathVariable String postId,
                                                              @RequestParam Optional<Integer> page,
                                                              @RequestParam Optional<Integer> size,
                                                              @RequestHeader("Authorization") String authHeader) {
-        Page<Comment> comments = commentService.getCommentsByPostId(postId, page, size);
-        return ResponseEntity.ok(comments);
+        return new ResponseEntity<CommentsPageDTO>(this.commentService.getCommentsByPostId(postId, page, size), HttpStatus.OK);
     }
 }

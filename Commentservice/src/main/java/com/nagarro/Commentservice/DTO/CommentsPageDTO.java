@@ -6,17 +6,17 @@ import com.nagarro.Commentservice.models.Comment;
 
 public class CommentsPageDTO {
 
-	private List<Comment> posts;
+	private List<Comment> comments;
     private int page;
     private int size;
     private long total;
     private boolean first;
     private boolean last;
-	public List<Comment> getPosts() {
-		return posts;
+	public List<Comment> getComments() {
+		return comments;
 	}
-	public void setPosts(List<Comment> posts) {
-		this.posts = posts;
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
 	}
 	public int getPage() {
 		return page;
