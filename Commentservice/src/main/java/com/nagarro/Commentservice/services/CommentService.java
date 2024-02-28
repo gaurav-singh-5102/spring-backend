@@ -11,5 +11,5 @@ public interface CommentService {
 
 	Comment addComment(CommentDTO commentDTO, String token) throws InvalidCommentException ;
 	int getCommentCountByPostId(String postId);
-	public CommentsPageDTO getCommentsByPostId(String postId, Optional<Integer> page, Optional<Integer> size);
+	public CommentsPageDTO getCommentsByPostId(String postId, Optional<Integer> page, Optional<Integer> size, String token);
 }

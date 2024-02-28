@@ -48,6 +48,7 @@ public class CommentController {
                                                              @RequestParam Optional<Integer> page,
                                                              @RequestParam Optional<Integer> size,
                                                              @RequestHeader("Authorization") String authHeader) {
-        return new ResponseEntity<CommentsPageDTO>(this.commentService.getCommentsByPostId(postId, page, size), HttpStatus.OK);
+		String token = authHeader.substring(7);
+        return new ResponseEntity<CommentsPageDTO>(this.commentService.getCommentsByPostId(postId, page, size, token), HttpStatus.OK);
     }
 }
