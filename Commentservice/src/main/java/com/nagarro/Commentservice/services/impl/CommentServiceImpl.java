@@ -18,7 +18,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.nagarro.Commentservice.DTO.CommentDTO;
 import com.nagarro.Commentservice.DTO.CommentSaveDTO;
 import com.nagarro.Commentservice.DTO.CommentsPageDTO;
+import com.nagarro.Commentservice.Exceptions.CommentNotFoundException;
 import com.nagarro.Commentservice.Exceptions.InvalidCommentException;
+import com.nagarro.Commentservice.Exceptions.InvalidRequestException;
 import com.nagarro.Commentservice.models.Comment;
 import com.nagarro.Commentservice.models.User;
 import com.nagarro.Commentservice.repository.CommentRepository;
@@ -112,6 +114,22 @@ public class CommentServiceImpl implements CommentService {
 	    	}
 	    });
 	    return commentsPageDTO;
+	}
+	
+	@Override
+	public void deleteComment(String commentId, String token) throws CommentNotFoundException, InvalidRequestException {
+		String userId = (String) jwtService.decodeJWT(token).get("jti");
+		Optional<Comment> commentToBeDeleted = commentRepository.findById(commentId);
+		if(commentToBeDeleted.isEmpty()) {
+			throw new CommentNotFoundException("Comment not found!");
+		}
+		Comment comment = commentToBeDeleted.get();
+		if(comment.getCommentAuthorId().equals(userId)||comment.getPostAuthorId().equals(userId)) {
+			commentRepository.delete(comment);
+		}
+		else {
+			throw new InvalidRequestException("You are not authorized to delete this comment");
+		}
 	}
 
 	private void validateComment(CommentDTO commentDTO) throws InvalidCommentException {
