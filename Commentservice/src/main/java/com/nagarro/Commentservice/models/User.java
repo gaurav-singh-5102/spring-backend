@@ -1,7 +1,6 @@
 package com.nagarro.Commentservice.models;
 
 public class User {
-
 	private String id;
     private String name;
     private String email;
