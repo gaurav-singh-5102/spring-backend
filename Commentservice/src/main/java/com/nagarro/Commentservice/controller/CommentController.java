@@ -2,10 +2,10 @@ package com.nagarro.Commentservice.controller;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nagarro.Commentservice.DTO.CommentDTO;
 import com.nagarro.Commentservice.DTO.CommentsPageDTO;
+import com.nagarro.Commentservice.Exceptions.CommentNotFoundException;
 import com.nagarro.Commentservice.Exceptions.InvalidCommentException;
+import com.nagarro.Commentservice.Exceptions.InvalidRequestException;
 import com.nagarro.Commentservice.models.Comment;
 import com.nagarro.Commentservice.services.CommentService;
 
@@ -48,6 +50,16 @@ public class CommentController {
                                                              @RequestParam Optional<Integer> page,
                                                              @RequestParam Optional<Integer> size,
                                                              @RequestHeader("Authorization") String authHeader) {
-        return new ResponseEntity<CommentsPageDTO>(this.commentService.getCommentsByPostId(postId, page, size), HttpStatus.OK);
+		String token = authHeader.substring(7);
+        return new ResponseEntity<CommentsPageDTO>(this.commentService.getCommentsByPostId(postId, page, size, token), HttpStatus.OK);
     }
+	@DeleteMapping("/{commentId}")
+	public ResponseEntity<?> deleteComment(@PathVariable String commentId, 
+			@RequestHeader("Authorization") String authHeader) 
+					throws CommentNotFoundException, InvalidRequestException
+	{
+		String token = authHeader.substring(7);
+		commentService.deleteComment(commentId, token);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }

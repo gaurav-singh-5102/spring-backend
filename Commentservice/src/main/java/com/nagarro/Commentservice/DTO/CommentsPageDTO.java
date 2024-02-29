@@ -6,16 +6,16 @@ import com.nagarro.Commentservice.models.Comment;
 
 public class CommentsPageDTO {
 
-	private List<Comment> comments;
+	private List<CommentSaveDTO> comments;
     private int page;
     private int size;
     private long total;
     private boolean first;
     private boolean last;
-	public List<Comment> getComments() {
+	public List<CommentSaveDTO> getComments() {
 		return comments;
 	}
-	public void setComments(List<Comment> comments) {
+	public void setComments(List<CommentSaveDTO> comments) {
 		this.comments = comments;
 	}
 	public int getPage() {
@@ -47,6 +47,11 @@ public class CommentsPageDTO {
 	}
 	public void setLast(boolean last) {
 		this.last = last;
+	}
+	@Override
+	public String toString() {
+		return "CommentsPageDTO [comments=" + comments + ", page=" + page + ", size=" + size + ", total=" + total
+				+ ", first=" + first + ", last=" + last + "]";
 	}
     
     
