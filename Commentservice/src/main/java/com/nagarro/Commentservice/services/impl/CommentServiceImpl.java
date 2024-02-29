@@ -1,6 +1,5 @@
 package com.nagarro.Commentservice.services.impl;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +50,6 @@ public class CommentServiceImpl implements CommentService {
 		comment.setPostAuthorId(commentDTO.getPostAuthorId());
 		comment.setCommentAuthorId(id);
 		comment.setContent(commentDTO.getContent());
-		comment.setCreatedAt(LocalDateTime.now());
 		return this.commentRepository.save(comment);
 	}
 	
@@ -66,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
 	    int sizeInt = size.orElse(5); 
 	    Pageable pageable = PageRequest.of(pageInt - 1, sizeInt, Sort.by(Sort.Direction.DESC, "createdAt"));
 	    Page<Comment> commentPage;
-	    commentPage = commentRepository.findByPostId(postId, pageable);
+		commentPage = commentRepository.findByPostIdOrderByCreatedAtDesc(postId, pageable);
 	    
 	    CommentsPageDTO commentsPageDTO = new CommentsPageDTO();
 	    commentsPageDTO.setComments(new ArrayList<CommentSaveDTO>());

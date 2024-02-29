@@ -1,8 +1,8 @@
 package com.nagarro.Commentservice.models;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import jakarta.persistence.Entity;
@@ -23,7 +23,7 @@ public class Comment {
 	private String commentAuthorId;
 	
 	private String content;
-	
+	@CreationTimestamp
 	private LocalDateTime createdAt;
 	
 	public String getId() {

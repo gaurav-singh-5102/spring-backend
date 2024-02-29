@@ -2,7 +2,7 @@ package com.nagarro.Commentservice.DTO;
 
 import java.util.List;
 
-import com.nagarro.Commentservice.models.Comment;
+
 
 public class CommentsPageDTO {
 

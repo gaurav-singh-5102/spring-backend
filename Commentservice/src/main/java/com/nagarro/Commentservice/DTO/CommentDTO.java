@@ -1,6 +1,5 @@
 package com.nagarro.Commentservice.DTO;
 
-import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -11,20 +10,13 @@ public class CommentDTO {
 	@NotBlank(message = "postAuthorId cannot be blank.")
 	private String postAuthorId;
 	@NotBlank(message = "Content cannot be blank.")
-	private String content;	
-	
-	private LocalDateTime createdAt;
+	private String content;
+
 	public String getContent() {
 		return content;
 	}
 	public void setContent(String content) {
 		this.content = content;
-	}
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
 	}
 	public String getPostId() {
 		return postId;
@@ -38,12 +30,13 @@ public class CommentDTO {
 	public void setPostAuthorId(String postAuthorId) {
 		this.postAuthorId = postAuthorId;
 	}
-	public CommentDTO(String postId, String postAuthorId, String content, LocalDateTime createdAt) {
+
+	public CommentDTO(String postId, String postAuthorId, String content) {
 		super();
 		this.postId = postId;
 		this.postAuthorId = postAuthorId;
 		this.content = content;
-		this.createdAt = createdAt;
+
 	}
 	public CommentDTO() {
 		super();
