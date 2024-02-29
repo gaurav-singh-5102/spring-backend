@@ -20,7 +20,7 @@ public class ErrorDTO {
     }
 
     public LocalDateTime getTimestamp() {
-        return timestamp;
+        return LocalDateTime.now();
     }
 
     public void setTimestamp(LocalDateTime timestamp) {

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nagarro.postservice.dto.PostDTO;
+import com.nagarro.postservice.dto.PostDetailsDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
 import com.nagarro.postservice.exceptions.InvalidAuthorException;
 import com.nagarro.postservice.exceptions.InvalidPostException;
@@ -33,11 +33,9 @@ import com.nagarro.postservice.services.PostService;
 public class PostController {
 
     private PostService postService;
-    // private JWTService jwtService;
 
     public PostController(PostService postService) {
         this.postService = postService;
-        // this.jwtService = jwtService;
     }
 
     @PostMapping()
@@ -56,9 +54,12 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Post> getPostDetails(@PathVariable String postId) throws PostNotFoundException {
-        Post post = postService.getPostDetails(postId);
-        return ResponseEntity.ok(post);
+    public ResponseEntity<?> getPostDetails(@PathVariable String postId,
+    										   @RequestParam(required = false, defaultValue = "false") boolean includeComments,
+    										   @RequestHeader("Authorization") String authHeader) throws PostNotFoundException {
+        String token = authHeader.substring(7);
+        PostDetailsDTO postDetailsDTO = postService.getPostDetails(postId, token, includeComments);
+        return ResponseEntity.ok(postDetailsDTO);
     }
     
     @PutMapping("/{postId}/like")
