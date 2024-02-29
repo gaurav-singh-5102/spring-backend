@@ -17,6 +17,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.nagarro.postservice.dto.CommentsPageDTO;
 import com.nagarro.postservice.dto.NotificationRequestDto;
@@ -84,12 +85,17 @@ public class PostServiceImpl implements PostService {
     }
     
     private CommentsPageDTO getCommentsForPost(String postId, String token) {
-        return commentWebClient.get()
-                .uri("/comments/post/{postId}", postId)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .retrieve()
-                .bodyToMono(CommentsPageDTO.class)
-                .block();
+    	try {
+    		return commentWebClient.get()
+                    .uri("/comments/post/{postId}", postId)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .bodyToMono(CommentsPageDTO.class)
+                    .block();
+    	} catch(Exception e) {
+    		return new CommentsPageDTO();
+    	}
+        
     }
     
     @Override
