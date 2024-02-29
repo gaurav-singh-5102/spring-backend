@@ -92,11 +92,12 @@ public class CommentServiceImpl implements CommentService {
                 List<CommentSaveDTO> existingDTOs = commentsPageDTO.getComments();
                 existingDTOs.add(commentSaveDTO);
                 commentsPageDTO.setComments(existingDTOs);
-	    	}else {
+	    	}
+	    	else {
 	    		User commentAuthor = getUser(token, comment.getCommentAuthorId());
 	    		Optional<User> existingUser = users.stream()
-	    				.filter(user->user.getId().equals(commentAuthor.getId()))
-	    				.findFirst();
+							    				.filter(user->user.getId().equals(commentAuthor.getId()))
+							    				.findFirst();
 	    		if(existingUser.isPresent()) {
 	    			List<CommentSaveDTO> existingDTOs = commentsPageDTO.getComments();
 	    			CommentSaveDTO commentSaveDTO = new CommentSaveDTO();

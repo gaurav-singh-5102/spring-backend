@@ -11,7 +11,7 @@ import com.nagarro.Commentservice.DTO.ErrorDTO;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler({InvalidCommentException.class, CommentNotFoundException.class})
-    public ResponseEntity<ErrorDTO> handlePostValidationException(Exception ex) {
+    public ResponseEntity<ErrorDTO> handleCommentValidationException(Exception ex) {
         return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 	@ExceptionHandler({InvalidRequestException.class})
