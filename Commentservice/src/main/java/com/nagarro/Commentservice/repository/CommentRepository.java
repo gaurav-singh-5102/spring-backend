@@ -10,4 +10,5 @@ public interface CommentRepository extends JpaRepository<Comment, String> {
 
 	int countByPostId(String postId);
 	Page<Comment> findByPostId(String postId, Pageable pageable);
+    Page<Comment> findByPostIdOrderByCreatedAtDesc(String postId, Pageable pageable);
 }
