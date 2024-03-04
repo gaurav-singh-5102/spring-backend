@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -16,9 +17,12 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import com.nagarro.postservice.dto.CommentsPageDTO;
 import com.nagarro.postservice.dto.NotificationRequestDto;
 import com.nagarro.postservice.dto.PostDTO;
+import com.nagarro.postservice.dto.PostDetailsDTO;
 import com.nagarro.postservice.dto.PostPageDTO;
 import com.nagarro.postservice.exceptions.InvalidAuthorException;
 import com.nagarro.postservice.exceptions.InvalidNotificationRequestException;
@@ -39,6 +43,7 @@ public class PostServiceImpl implements PostService {
     private Validator validator;
     private final WebClient webClient;
     private final WebClient userWebclient;
+    private final WebClient commentWebClient;
     private JWTService jwtService;
     @Value("${user.service.base.url}")
     private String userServiceBaseUrl;
@@ -52,6 +57,7 @@ public class PostServiceImpl implements PostService {
         this.webClient = webClientBuilder.baseUrl("http://localhost:8084").build();
         this.userWebclient = webClientBuilder.baseUrl("http://localhost:8181").build();
         this.jwtService = jwtService;
+        this.commentWebClient=webClientBuilder.baseUrl("http://localhost:8182").build();
     }
 
     @Override
@@ -67,10 +73,29 @@ public class PostServiceImpl implements PostService {
     }
     
     @Override
-    public Post getPostDetails(String postId) throws PostNotFoundException {
+    public PostDetailsDTO getPostDetails(String postId, String token, boolean includeComments) throws PostNotFoundException {
     	
     	Optional<Post> postOptional = postRepository.findById(postId);
-    	return postOptional.orElseThrow(()-> new PostNotFoundException("Post Not found with id: "+postId));
+    	Post post = postOptional.orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+    	CommentsPageDTO comments = null;
+    	if(includeComments) {
+    		comments = getCommentsForPost(postId, token);
+    	}
+    	return new PostDetailsDTO(post, comments);
+    }
+    
+    private CommentsPageDTO getCommentsForPost(String postId, String token) {
+    	try {
+    		return commentWebClient.get()
+                    .uri("/comments/post/{postId}", postId)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .bodyToMono(CommentsPageDTO.class)
+                    .block();
+    	} catch(Exception e) {
+    		return new CommentsPageDTO();
+    	}
+        
     }
     
     @Override
