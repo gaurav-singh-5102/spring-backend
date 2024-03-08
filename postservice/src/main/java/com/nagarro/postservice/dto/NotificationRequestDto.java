@@ -3,7 +3,6 @@ package com.nagarro.postservice.dto;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class NotificationRequestDto {
 	@NotBlank(message="Notification content cannot be null")
