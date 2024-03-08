@@ -17,7 +17,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.nagarro.postservice.dto.CommentsPageDTO;
 import com.nagarro.postservice.dto.NotificationRequestDto;
@@ -101,7 +100,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void likePost(String postId, String token) throws PostNotFoundException {
     	ArrayList<String> likes = new ArrayList<>();
-    	String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = jwtService.decodeJWT(token).get("jti").toString();
     	Optional<Post> postOptional = postRepository.findById(postId);
     	Post post = postOptional.orElseThrow(()->new PostNotFoundException("Post not found with id: " + postId));
     	likes = post.getLikes();
