@@ -82,6 +82,8 @@ public class ChatController {
         userInfo.setName(connectMessage.getSenderName());
         userInfo.setStatus("Inactive");
 
+        users.removeIf(user -> user.getId().equals(userInfo.getId()));
+        users.add(userInfo);
         connectMessage.setUsers(users);
         return connectMessage;
     }
