@@ -1,10 +1,11 @@
-package com.nagarro.postservice.dto;
+package com.nagarro.Commentservice.DTO;
 
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class NotificationRequestDto {
+public class NotificationRequestDTO {
+
 	@NotBlank(message="Notification content cannot be null")
 	private String content;
 	@NotBlank(message="Sender content cannot be null")
@@ -44,7 +45,7 @@ public class NotificationRequestDto {
 	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
-	public NotificationRequestDto(String content, String sender, String receiver, boolean isGroupNotification,
+	public NotificationRequestDTO(String content, String sender, String receiver, boolean isGroupNotification,
 			LocalDateTime timestamp) {
 		super();
 		this.content = content;
@@ -53,7 +54,7 @@ public class NotificationRequestDto {
 		this.isGroupNotification = isGroupNotification;
 		this.timestamp = timestamp;
 	}
-	public NotificationRequestDto() {
+	public NotificationRequestDTO() {
 		
 	}
 	@Override

@@ -76,9 +76,12 @@ public class PostServiceImpl implements PostService {
     	
     	Optional<Post> postOptional = postRepository.findById(postId);
     	Post post = postOptional.orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
-    	CommentsPageDTO comments = null;
+    	CommentsPageDTO comments = new CommentsPageDTO();
     	if(includeComments) {
     		comments = getCommentsForPost(postId, token);
+    	}
+    	if(!includeComments) {
+    		 comments.setComments(new ArrayList<>());
     	}
     	return new PostDetailsDTO(post, comments);
     }
@@ -174,11 +177,13 @@ public class PostServiceImpl implements PostService {
             });
         } else {
             postPage = postRepository.findByAuthorEmail(feed, pageable);
-            String authorId = postPage.getContent().get(0).getAuthor().getId();
-            User postAuthor = getUser(token, authorId);
-            postPage.getContent().forEach(post -> {
-                post.setAuthor(postAuthor);
-            });
+            if(!postPage.getContent().isEmpty()) {	
+            	String authorId = postPage.getContent().get(0).getAuthor().getId();
+            	User postAuthor = getUser(token, authorId);
+            	postPage.getContent().forEach(post -> {
+            		post.setAuthor(postAuthor);
+            	});
+            }
         }
         PostPageDTO postPageDTO = new PostPageDTO();
         postPageDTO.setPosts(postPage.getContent());

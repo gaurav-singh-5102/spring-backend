@@ -1,5 +1,6 @@
 package com.nagarro.Commentservice.services.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,19 +13,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
 
 import com.nagarro.Commentservice.DTO.CommentDTO;
 import com.nagarro.Commentservice.DTO.CommentSaveDTO;
 import com.nagarro.Commentservice.DTO.CommentsPageDTO;
+import com.nagarro.Commentservice.DTO.NotificationRequestDTO;
 import com.nagarro.Commentservice.Exceptions.CommentNotFoundException;
 import com.nagarro.Commentservice.Exceptions.InvalidCommentException;
 import com.nagarro.Commentservice.Exceptions.InvalidRequestException;
+import com.nagarro.Commentservice.Exceptions.NotificationRequestException;
 import com.nagarro.Commentservice.models.Comment;
 import com.nagarro.Commentservice.models.User;
 import com.nagarro.Commentservice.repository.CommentRepository;
 import com.nagarro.Commentservice.services.CommentService;
 import com.nagarro.Commentservice.services.JWTService;
+
+import reactor.core.publisher.Mono;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -33,16 +40,18 @@ public class CommentServiceImpl implements CommentService {
 	private CommentRepository commentRepository;
 	private Validator validator;
 	private final WebClient webClient;
+	private final WebClient notificationWebClient;
 	
 	public CommentServiceImpl(JWTService jwtService, CommentRepository commentRepository, Validator validator, WebClient.Builder webClientBuilder) {
 		this.jwtService = jwtService;
 		this.commentRepository = commentRepository;
 		this.validator=validator;
 		this.webClient = webClientBuilder.baseUrl("http://localhost:8181").build();
+		this.notificationWebClient = webClientBuilder.baseUrl("http://localhost:8084").build();
 	}
 	
 	@Override
-	public Comment addComment(CommentDTO commentDTO, String token) throws InvalidCommentException {
+	public Comment addComment(CommentDTO commentDTO, String token) throws InvalidCommentException, NotificationRequestException {
 		validateComment(commentDTO);
 		String id = (String) jwtService.decodeJWT(token).get("jti");
 		Comment comment = new Comment();
@@ -50,8 +59,36 @@ public class CommentServiceImpl implements CommentService {
 		comment.setPostAuthorId(commentDTO.getPostAuthorId());
 		comment.setCommentAuthorId(id);
 		comment.setContent(commentDTO.getContent());
+		User user = getUser(token, id);
+		sendNotification(user.getName(), comment).subscribe();
 		return this.commentRepository.save(comment);
 	}
+	
+	private Mono<Void> sendNotification(String username, Comment comment) throws NotificationRequestException {
+        NotificationRequestDTO notification = new NotificationRequestDTO();
+        notification.setContent(username+ " added a comment on your post!");
+        notification.setSender(username);
+        notification.setReceiver(comment.getPostAuthorId());
+        notification.setGroupNotification(false);
+        notification.setTimestamp(LocalDateTime.now());
+        
+        try {
+        	
+        	return notificationWebClient.post()
+        			.uri("/sendNotification")
+        			.body(BodyInserters.fromValue(notification))
+        			.retrieve()
+        			.toBodilessEntity()
+        			.then();
+        }
+        catch(WebClientException ex) {
+        	throw new NotificationRequestException("Failed to send notiication");
+        }
+        catch(Exception e) {
+        	throw new NotificationRequestException("Failed to send notiication");
+        }
+        
+    }
 	
 	@Override
     public int getCommentCountByPostId(String postId) {

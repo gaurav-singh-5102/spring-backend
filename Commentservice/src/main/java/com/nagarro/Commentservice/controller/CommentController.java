@@ -19,6 +19,7 @@ import com.nagarro.Commentservice.DTO.CommentDTO;
 import com.nagarro.Commentservice.DTO.CommentsPageDTO;
 import com.nagarro.Commentservice.Exceptions.CommentNotFoundException;
 import com.nagarro.Commentservice.Exceptions.InvalidCommentException;
+import com.nagarro.Commentservice.Exceptions.NotificationRequestException;
 import com.nagarro.Commentservice.Exceptions.InvalidRequestException;
 import com.nagarro.Commentservice.models.Comment;
 import com.nagarro.Commentservice.services.CommentService;
@@ -35,7 +36,7 @@ public class CommentController {
 	}
 	@PostMapping
 	public ResponseEntity<Comment> addComment(@RequestBody CommentDTO commentDTO,
-			@RequestHeader("Authorization") String authHeader) throws InvalidCommentException{
+			@RequestHeader("Authorization") String authHeader) throws InvalidCommentException, NotificationRequestException{
 		String token = authHeader.substring(7);
 		return new ResponseEntity<Comment>(this.commentService.addComment(commentDTO, token), HttpStatus.CREATED);
 	}
