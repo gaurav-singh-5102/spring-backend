@@ -15,6 +15,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
 
 import com.nagarro.Commentservice.DTO.CommentDTO;
 import com.nagarro.Commentservice.DTO.CommentSaveDTO;
@@ -22,8 +23,8 @@ import com.nagarro.Commentservice.DTO.CommentsPageDTO;
 import com.nagarro.Commentservice.DTO.NotificationRequestDTO;
 import com.nagarro.Commentservice.Exceptions.CommentNotFoundException;
 import com.nagarro.Commentservice.Exceptions.InvalidCommentException;
-import com.nagarro.Commentservice.Exceptions.InvalidNotificationRequestException;
 import com.nagarro.Commentservice.Exceptions.InvalidRequestException;
+import com.nagarro.Commentservice.Exceptions.NotificationRequestException;
 import com.nagarro.Commentservice.models.Comment;
 import com.nagarro.Commentservice.models.User;
 import com.nagarro.Commentservice.repository.CommentRepository;
@@ -50,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 	
 	@Override
-	public Comment addComment(CommentDTO commentDTO, String token) throws InvalidCommentException, InvalidNotificationRequestException {
+	public Comment addComment(CommentDTO commentDTO, String token) throws InvalidCommentException, NotificationRequestException {
 		validateComment(commentDTO);
 		String id = (String) jwtService.decodeJWT(token).get("jti");
 		Comment comment = new Comment();
@@ -63,31 +64,31 @@ public class CommentServiceImpl implements CommentService {
 		return this.commentRepository.save(comment);
 	}
 	
-	private Mono<Void> sendNotification(String username, Comment comment) throws InvalidNotificationRequestException {
+	private Mono<Void> sendNotification(String username, Comment comment) throws NotificationRequestException {
         NotificationRequestDTO notification = new NotificationRequestDTO();
         notification.setContent(username+ " added a comment on your post!");
         notification.setSender(username);
         notification.setReceiver(comment.getPostAuthorId());
         notification.setGroupNotification(false);
         notification.setTimestamp(LocalDateTime.now());
-        System.out.println(notification);
-        validateNotification(notification);
         
-        return notificationWebClient.post()
-                .uri("/sendNotification")
-                .body(BodyInserters.fromValue(notification))
-                .retrieve()
-                .toBodilessEntity()
-                .then();
+        try {
+        	
+        	return notificationWebClient.post()
+        			.uri("/sendNotification")
+        			.body(BodyInserters.fromValue(notification))
+        			.retrieve()
+        			.toBodilessEntity()
+        			.then();
+        }
+        catch(WebClientException ex) {
+        	throw new NotificationRequestException("Failed to send notiication");
+        }
+        catch(Exception e) {
+        	throw new NotificationRequestException("Failed to send notiication");
+        }
+        
     }
-	 
-	private void validateNotification(NotificationRequestDTO notification) throws InvalidNotificationRequestException {
-	        Errors errors = new BeanPropertyBindingResult(notification, "entity");
-	    validator.validate(notification, errors);
-	    if(errors.hasErrors()) {
-	    	throw new InvalidNotificationRequestException(errors.getAllErrors());
-	    }
-	}
 	
 	@Override
     public int getCommentCountByPostId(String postId) {

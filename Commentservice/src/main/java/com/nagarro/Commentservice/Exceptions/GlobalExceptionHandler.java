@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDTO> handleCommentValidationException(Exception ex) {
         return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
-	@ExceptionHandler({InvalidRequestException.class})
+	@ExceptionHandler({InvalidRequestException.class, NotificationRequestException.class})
     public ResponseEntity<ErrorDTO> handleInvalidRequestException(Exception ex) {
         return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
