@@ -78,6 +78,8 @@ public class PostServiceImpl implements PostService {
     	Post post = postOptional.orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
     	CommentsPageDTO comments = new CommentsPageDTO();
     	if(includeComments) {
+    		User postAuthor = getUser(token, post.getAuthor().getId());
+    		post.setAuthor(postAuthor);
     		comments = getCommentsForPost(postId, token);
     	}
     	if(!includeComments) {
@@ -104,6 +106,7 @@ public class PostServiceImpl implements PostService {
     public void likePost(String postId, String token) throws PostNotFoundException {
     	ArrayList<String> likes = new ArrayList<>();
         String username = jwtService.decodeJWT(token).get("jti").toString();
+        String likedBy = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     	Optional<Post> postOptional = postRepository.findById(postId);
     	Post post = postOptional.orElseThrow(()->new PostNotFoundException("Post not found with id: " + postId));
     	likes = post.getLikes();
@@ -112,7 +115,7 @@ public class PostServiceImpl implements PostService {
     	}
     	else {
     		likes.add(username);
-    		sendNotification(username, post).subscribe();
+    		sendNotification(likedBy, post).subscribe();
     	}
     	
     	post.setLikes(likes);
@@ -128,7 +131,6 @@ public class PostServiceImpl implements PostService {
         notification.setReceiver(post.getAuthor().getId());
         notification.setGroupNotification(false);
         notification.setTimestamp(LocalDateTime.now());
-
         validateNotification(notification);
         
         return webClient.post()

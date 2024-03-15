@@ -10,7 +10,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.nagarro.websockets.exception.ChatMessageValidationException;
 import com.nagarro.websockets.exception.InvalidNotificationRequestException;
@@ -34,11 +33,20 @@ public class ChatController {
     	User userInfo = new User(); 
         userInfo.setId(connectMessage.getSenderId());
         userInfo.setName(connectMessage.getSenderName());
-        userInfo.setStatus("Active");
-        if (!users.stream().anyMatch(user -> user.getId().equals(userInfo.getId()))) {
-            users.add(userInfo);
+        boolean userExists = users.stream().anyMatch(user -> user.getId().equals(userInfo.getId()));
+        // If the user doesn't exist or is not active, add/update the user and set status to "Active"
+        if (!userExists || !"Active".equals(userInfo.getStatus())) {
+            userInfo.setStatus("Active");
+            // If the user exists, update their status
+            if (userExists) {
+                users.stream()
+                     .filter(user -> user.getId().equals(userInfo.getId()))
+                     .findFirst()
+                     .ifPresent(user -> user.setStatus("Active"));
+            } else {
+                users.add(userInfo);
+            }
         }
-        ;
         connectMessage.setHistory(messageService.getMessages(connectMessage.getSenderId()));
         connectMessage.setUsers(users);
         return connectMessage;
@@ -81,7 +89,7 @@ public class ChatController {
         userInfo.setId(connectMessage.getSenderId());
         userInfo.setName(connectMessage.getSenderName());
         userInfo.setStatus("Inactive");
-
+       
         users.removeIf(user -> user.getId().equals(userInfo.getId()));
         users.add(userInfo);
         connectMessage.setUsers(users);
