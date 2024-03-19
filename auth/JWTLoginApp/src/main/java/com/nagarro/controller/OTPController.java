@@ -18,7 +18,7 @@ import com.nagarro.service.UserService;
 
 @RestController
 @CrossOrigin(origins="http://localhost:4200")
-@RequestMapping("/otp")
+@RequestMapping("/auth/otp")
 public class OTPController {
 
 	@Autowired

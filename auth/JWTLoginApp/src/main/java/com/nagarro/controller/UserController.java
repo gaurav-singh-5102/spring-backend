@@ -36,7 +36,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin(origins="http://localhost:4200")
-@RequestMapping("/user")
+@RequestMapping("/auth/user")
 public class UserController {
 	
 	@Autowired
@@ -82,6 +82,7 @@ public class UserController {
             UserDetails existingUser = authenticationResponse.getUser();
 	        
 	    }
+		System.out.println(responseEntity);
         return responseEntity;
     }
 	

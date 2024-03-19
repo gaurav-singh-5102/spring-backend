@@ -32,9 +32,7 @@ public class SecurityConfig {
                 .cors((cors) -> new CorsConfiguration())
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/user/welcome", "/user/addNewUser", "/user/generateToken", "user/login",
-                                "otp/send", "otp/verify", "user/verify-otp", "oauth2/authorization/google",
-                                "user/hello", "user/linkedin-auth")
+                        .requestMatchers("/auth/user/**","/auth/otp/**","/auth/user/welcome","oauth2/authorization/google")
                         .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
