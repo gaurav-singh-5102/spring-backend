@@ -17,8 +17,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	RequestUpgradeStrategy upgradeStrategy = new TomcatRequestUpgradeStrategy();
 	@Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket").setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy)).setAllowedOrigins("http://localhost:4200", "http://localhost:8086", "http://localhost:8084");
-        registry.addEndpoint("/websocket").setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy)).setAllowedOrigins("http://localhost:4200", "http://localhost:8086", "http://localhost:8084").withSockJS();
+        registry.addEndpoint("/notification/websocket").setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy)).setAllowedOrigins("http://localhost:4200", "http://localhost:8086", "http://localhost:8084");
+        registry.addEndpoint("/notification/websocket").setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy)).setAllowedOrigins("http://localhost:4200", "http://localhost:8086", "http://localhost:8084").withSockJS();
     }
 
     @Override

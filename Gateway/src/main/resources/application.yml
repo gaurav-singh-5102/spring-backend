@@ -1,0 +1,56 @@
+server:
+  port: 8089
+  
+spring:
+  application:
+    name: GATEWAY
+ 
+  cloud:
+    gateway:
+      default-filters:
+      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+      routes:
+      - id: CHAT-SERVICE
+        uri: http://localhost:8087
+        predicates:
+        - Path=/chat**
+        
+      - id: COMMENT-SERVICE
+        uri: http://localhost:8182
+        predicates:
+        - Path=/comments/**
+        
+      - id: AUTH-SERVICE
+        uri: http://localhost:8088
+        predicates:
+        - Path=/auth/**
+       
+      - id: USER-SERVICE
+        uri: http://localhost:8181/users
+        predicates:
+        - Path=/users/**
+        
+      - id: POST-SERVICE
+        uri: http://localhost:8086
+        predicates:
+        - Path=/posts/**
+          
+      - id: NOTIFICATION-SERVICE
+        uri: http://localhost:8084
+        predicates:
+        - Path=/notification**       
+        
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry : true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka   
