@@ -44,19 +44,15 @@ public class PostServiceImpl implements PostService {
     private final WebClient userWebclient;
     private final WebClient commentWebClient;
     private JWTService jwtService;
-    @Value("${user.service.base.url}")
-    private String userServiceBaseUrl;
-    @Value("${notification.service.base.url}") 
-    private String notificationServiceBaseUrl;
     
     public PostServiceImpl(PostRepository postRepository, Validator validator, WebClient.Builder webClientBuilder,
             JWTService jwtService) {
         this.postRepository = postRepository;
         this.validator = validator;
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8084").build();
-        this.userWebclient = webClientBuilder.baseUrl("http://localhost:8181").build();
+        this.webClient = webClientBuilder.baseUrl("http://notification-service").build();
+        this.userWebclient = webClientBuilder.baseUrl("http://user-service").build();
         this.jwtService = jwtService;
-        this.commentWebClient=webClientBuilder.baseUrl("http://localhost:8182").build();
+        this.commentWebClient=webClientBuilder.baseUrl("http://comment-service").build();
     }
 
     @Override
@@ -206,6 +202,7 @@ public class PostServiceImpl implements PostService {
                     .bodyToMono(User.class)
                     .block();
         } catch (Exception e) {
+        	System.out.println(e);
             User user = new User();
             user.setEmail(null);
             user.setId(id);

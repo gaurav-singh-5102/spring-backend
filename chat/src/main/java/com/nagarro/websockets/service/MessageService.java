@@ -27,15 +27,13 @@ import jakarta.annotation.PreDestroy;
 public class MessageService {
 	
 	private final WebClient webClient;
-	 
-    private String notificationServiceBaseUrl;
 	private Validator validator;
 	
     private HashMap<String, HashMap<String, List<ChatMessage>>> messages = new HashMap<>();
     
     public MessageService(Validator validator, WebClient.Builder webClientBuilder) {
     	this.validator = validator;
-    	this.webClient = webClientBuilder.baseUrl("http://localhost:8084").build();
+    	this.webClient = webClientBuilder.baseUrl("http://notification-service").build();
     }
 
     public void saveMessage(ChatMessage chatMessage) throws ChatMessageValidationException, InvalidNotificationRequestException {

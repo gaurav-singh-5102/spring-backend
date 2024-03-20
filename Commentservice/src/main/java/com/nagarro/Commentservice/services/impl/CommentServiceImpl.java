@@ -46,8 +46,8 @@ public class CommentServiceImpl implements CommentService {
 		this.jwtService = jwtService;
 		this.commentRepository = commentRepository;
 		this.validator=validator;
-		this.webClient = webClientBuilder.baseUrl("http://localhost:8181").build();
-		this.notificationWebClient = webClientBuilder.baseUrl("http://localhost:8084").build();
+		this.webClient = webClientBuilder.baseUrl("http://user-service").build();
+		this.notificationWebClient = webClientBuilder.baseUrl("http://notification-service").build();
 	}
 	
 	@Override

@@ -55,8 +55,6 @@ public class UserServiceImpl implements UserService {
 
 		User existingUser = userRepository.findByEmail(userDTO.getEmail());
 	    if (existingUser != null) {
-//	    	ErrorDto errorDto = new ErrorDto("User with this email already exists");
-//	        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDto);
 	    	throw new UserAlreadyExistsException();
 	    }
 		
