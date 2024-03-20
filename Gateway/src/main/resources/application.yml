@@ -16,41 +16,32 @@ spring:
             allowedHeaders: "*"
             allowedMethods: "*"
       routes:
-      - id: CHAT-SERVICE
-        uri: http://localhost:8087
-        predicates:
-        - Path=/chat**
-        
       - id: COMMENT-SERVICE
-        uri: http://localhost:8182
+        uri: lb://COMMENT-SERVICE
         predicates:
         - Path=/comments/**
         
       - id: AUTH-SERVICE
-        uri: http://localhost:8088
+        uri: lb://AUTH-SERVICE
         predicates:
         - Path=/auth/**
        
       - id: USER-SERVICE
-        uri: http://localhost:8181/users
+        uri: lb://USER-SERVICE
         predicates:
         - Path=/users/**
         
       - id: POST-SERVICE
-        uri: http://localhost:8086
+        uri: lb://POST-SERVICE
         predicates:
-        - Path=/posts/**
-          
-      - id: NOTIFICATION-SERVICE
-        uri: http://localhost:8084
-        predicates:
-        - Path=/notification**       
+        - Path=/posts/**      
         
-#eureka:
-#  instance:
-#    prefer-ip-address: true
-#  client:
-#    fetch-registry : true
-#    register-with-eureka: true
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka   
+eureka:
+ instance:
+   prefer-ip-address: true
+   hostname : localhost
+ client:
+   fetch-registry : true
+   register-with-eureka: true
+   service-url:
+     defaultZone: http://localhost:8083/eureka   
