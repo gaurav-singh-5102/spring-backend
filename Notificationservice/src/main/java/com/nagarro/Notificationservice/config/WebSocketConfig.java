@@ -1,5 +1,6 @@
 package com.nagarro.Notificationservice.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,10 +16,18 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	RequestUpgradeStrategy upgradeStrategy = new TomcatRequestUpgradeStrategy();
+
+    @Value("${frontend.origin}")
+    private String frontendOrigin;
+
 	@Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/notification/websocket").setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy)).setAllowedOrigins("http://localhost:4200", "http://localhost:8086", "http://localhost:8084");
-        registry.addEndpoint("/notification/websocket").setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy)).setAllowedOrigins("http://localhost:4200", "http://localhost:8086", "http://localhost:8084").withSockJS();
+        registry.addEndpoint("/notification/websocket")
+                .setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy))
+                .setAllowedOrigins(frontendOrigin, "http://localhost:8086", "http://localhost:8084");
+        registry.addEndpoint("/notification/websocket")
+                .setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy))
+                .setAllowedOrigins(frontendOrigin, "http://localhost:8086", "http://localhost:8084").withSockJS();
     }
 
     @Override
